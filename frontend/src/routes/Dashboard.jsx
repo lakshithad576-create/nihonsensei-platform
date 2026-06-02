@@ -137,32 +137,81 @@ export default function Dashboard() {
       }
 
       // ════ STUDY MATERIALS TAB ════
-      case 'materials':
+      case 'materials': {
+        // 1. Simulating backend data with categories and permission flags
+        const materialsList = [
+          { id: 1, title: 'Hiragana Practice Sheet', category: 'Grammar Particles', size: '1.2 MB', hasPermission: true },
+          { id: 2, title: 'Verb Conjugation Chart', category: 'Grammar Particles', size: '2.1 MB', hasPermission: false },
+          { id: 3, title: 'Restaurant Vocab Flashcards', category: 'Spoken Practice', size: '3.4 MB', hasPermission: false },
+          { id: 4, title: 'N5 Vocabulary List', category: 'JLPT Prep', size: '4.5 MB', hasPermission: true },
+        ];
+
+        // 2. Group the materials by their category
+        const groupedMaterials = materialsList.reduce((acc, material) => {
+          if (!acc[material.category]) acc[material.category] = [];
+          acc[material.category].push(material);
+          return acc;
+        }, {});
+
         return (
           <div className="flex-1 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-3xl font-bold text-zinc-900 mb-2 tracking-tight" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>Study Materials</h2>
-            <p className="text-zinc-500 text-sm mb-8">Download worksheets, flashcards, and lesson PDFs.</p>
+            <p className="text-zinc-500 text-sm mb-8">Download worksheets, flashcards, and lesson PDFs. (Premium materials require admin approval).</p>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {['Hiragana Practice Sheet', 'N5 Vocabulary List', 'Verb Conjugation Chart', 'Kanji Strokes Guide'].map((doc, i) => (
-                <div key={i} className="bg-white p-5 rounded-[1.5rem] border border-zinc-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] flex items-center justify-between hover:shadow-md transition-shadow cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#fff0f3] text-[#de1d4d] rounded-2xl flex items-center justify-center shrink-0">
-                      <FileText size={22} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-zinc-900 text-sm">{doc}</h3>
-                      <p className="text-zinc-500 text-xs mt-0.5">PDF Document · {(Math.random() * 3 + 1).toFixed(1)} MB</p>
-                    </div>
+            {/* 3. Loop through categories */}
+            <div className="flex flex-col gap-12">
+              {Object.keys(groupedMaterials).map((category) => (
+                <div key={category}>
+                  
+                  {/* Category Header */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <h3 className="text-lg font-bold text-zinc-800 uppercase tracking-widest">{category}</h3>
+                    <div className="h-px bg-zinc-200 flex-1"></div>
                   </div>
-                  <button className="w-10 h-10 rounded-full border border-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#de1d4d] group-hover:bg-[#fff0f3] transition-colors shrink-0">
-                    <Download size={18} />
-                  </button>
+
+                  {/* Materials Grid for this Category */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {groupedMaterials[category].map((doc) => (
+                      <div 
+                        key={doc.id} 
+                        className={`bg-white p-5 rounded-[1.5rem] border shadow-[0_2px_10px_rgb(0,0,0,0.02)] flex items-center justify-between transition-all ${doc.hasPermission ? 'border-zinc-100 hover:shadow-md cursor-pointer group' : 'border-zinc-50 opacity-75 cursor-not-allowed'}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${doc.hasPermission ? 'bg-[#fff0f3] text-[#de1d4d]' : 'bg-zinc-100 text-zinc-400'}`}>
+                            <FileText size={22} />
+                          </div>
+                          <div>
+                            <h3 className={`font-bold text-sm ${doc.hasPermission ? 'text-zinc-900' : 'text-zinc-500'}`}>
+                              {doc.title}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <p className="text-zinc-500 text-xs">PDF Document · {doc.size}</p>
+                              {!doc.hasPermission && (
+                                <span className="text-zinc-400 text-[9px] font-bold uppercase tracking-widest bg-zinc-100 px-2 py-0.5 rounded-md">
+                                  Locked
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Download or Locked Button */}
+                        <button 
+                          disabled={!doc.hasPermission}
+                          className={`w-10 h-10 rounded-full border border-zinc-100 flex items-center justify-center shrink-0 transition-colors ${doc.hasPermission ? 'text-zinc-400 group-hover:text-[#de1d4d] group-hover:bg-[#fff0f3]' : 'text-zinc-300 bg-zinc-50 cursor-not-allowed'}`}
+                        >
+                          {doc.hasPermission ? <Download size={18} /> : <Lock size={16} />}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
               ))}
             </div>
           </div>
         );
+      }
 
       // ════ SETTINGS TAB ════
       case 'settings':
