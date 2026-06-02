@@ -5,12 +5,12 @@ import './index.css';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
 
-import Home from './routes/Home';
-import Login from './routes/Login';
+import Home from './pages/Home';
+import Login from './pages/login';
 import LoginCallback from './routes/LoginCallback';
-import Dashboard from './routes/Dashboard';
-import Signup from './routes/Signup';
-import AdminDashboard from './routes/AdminDashboard';
+import Dashboard from './pages/Dashboard';
+import Signup from './pages/Signup';
+import AdminDashboard from './pages/AdminDashboard';
 
 const rootRoute = createRootRoute({
   component: () => (
