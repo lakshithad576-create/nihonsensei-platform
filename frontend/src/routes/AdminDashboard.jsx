@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { 
   X, Bell, LogOut, LayoutDashboard, CalendarDays, 
   Video, BookOpen, Settings, PanelLeftClose,
   Flower2, Users, ShieldCheck, Plus, Trash2, Edit3, Save, FolderPlus, Search, UploadCloud, ImagePlus
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate({ to: '/login' });
+  };
 
   // ─── STATE: Daily Vocabulary ──────────────────────────────────────────────
   const [vocabList, setVocabList] = useState([
@@ -433,7 +441,7 @@ export default function AdminDashboard() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-full text-sm font-semibold transition-all shadow-md">
+          <button type="button" onClick={handleLogout} className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-full text-sm font-semibold transition-all shadow-md">
             <LogOut size={16} strokeWidth={2.5} /> Logout
           </button>
         </div>

@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, Link } from '@tanstack/react-router';
+import { createRootRoute, Outlet, Link, useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../context/AuthContext';
 
 export const route = createRootRoute({
@@ -7,6 +7,12 @@ export const route = createRootRoute({
 
 function RootLayout() {
   const { logout, currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate({ to: '/login' });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50">
@@ -22,7 +28,7 @@ function RootLayout() {
           <Link to="/about" className="text-zinc-600 hover:text-sakura transition-colors">About</Link>
           <Link to="/contact" className="text-zinc-600 hover:text-sakura transition-colors">Contact</Link>
           {currentUser ? (
-            <button onClick={logout} className="px-4 py-2 bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 transition-all text-xs">
+            <button type="button" onClick={handleLogout} className="px-4 py-2 bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 transition-all text-xs">
               Sign Out
             </button>
           ) : (

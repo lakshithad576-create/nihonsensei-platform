@@ -2,17 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Outlet, RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
 import './index.css';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/shared/ProtectedRoute';
 
-// 1. Import our Pages
 import Home from './routes/Home';
 import Login from './routes/Login';
 import LoginCallback from './routes/LoginCallback';
 import Dashboard from './routes/Dashboard';
 import Signup from './routes/Signup';
-import AdminDashboard from './routes/AdminDashboard'; // <-- 1. Imported the Admin page
+import AdminDashboard from './routes/AdminDashboard';
 
-// 2. Create the Root Layout (This surrounds every page)
 const rootRoute = createRootRoute({
   component: () => (
     <main className="w-full">
@@ -21,7 +20,6 @@ const rootRoute = createRootRoute({
   ),
 });
 
-// 3. Define the Routes
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
@@ -40,10 +38,26 @@ const loginCallbackRoute = createRoute({
   component: LoginCallback,
 });
 
+function ProtectedDashboardRoute() {
+  return (
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  );
+}
+
+function ProtectedAdminRoute() {
+  return (
+    <ProtectedRoute requireAdmin>
+      <AdminDashboard />
+    </ProtectedRoute>
+  );
+}
+
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/dashboard',
-  component: Dashboard,
+  component: ProtectedDashboardRoute,
 });
 
 const signupRoute = createRoute({
@@ -56,22 +70,20 @@ const signupRoute = createRoute({
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin',
-  component: AdminDashboard, 
+  component: ProtectedAdminRoute,
 });
 
-// 4. Build the Route Tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   loginCallbackRoute,
   dashboardRoute,
   signupRoute,
-  adminRoute, // <-- 3. Added Admin to the tree
+  adminRoute,
 ]);
 
 const router = createRouter({ routeTree });
 
-// 5. Render the App
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
