@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Outlet, RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
 import './index.css';
 import { AuthProvider } from './context/AuthContext';
-import { ProtectedRoute } from './components/shared/ProtectedRoute';
+import ProtectedLayout from './layouts/ProtectedLayout';
 
 import Home from './pages/Home';
 import Login from './pages/login';
@@ -13,11 +13,7 @@ import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 
 const rootRoute = createRootRoute({
-  component: () => (
-    <main className="w-full">
-      <Outlet />
-    </main>
-  ),
+  component: () => <Outlet />,
 });
 
 const indexRoute = createRoute({
@@ -40,17 +36,17 @@ const loginCallbackRoute = createRoute({
 
 function ProtectedDashboardRoute() {
   return (
-    <ProtectedRoute>
+    <ProtectedLayout>
       <Dashboard />
-    </ProtectedRoute>
+    </ProtectedLayout>
   );
 }
 
 function ProtectedAdminRoute() {
   return (
-    <ProtectedRoute requireAdmin>
+    <ProtectedLayout requireAdmin>
       <AdminDashboard />
-    </ProtectedRoute>
+    </ProtectedLayout>
   );
 }
 

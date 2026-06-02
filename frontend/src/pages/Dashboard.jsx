@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { 
-  X, Bell, LogOut, LayoutDashboard, CalendarDays, 
-  Video, BookOpen, Settings, PlayCircle, PanelLeftClose,
-  Flower2, Clock, Play, Download, FileText, Lock, Menu 
-} from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
+import { Clock, Download, FileText, Lock, Play, PlayCircle, Video } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import DashboardLayout from '../layouts/DashboardLayout';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { logout } = useAuth();
   const navigate = useNavigate();
   
-  // ─── NEW: Mobile Menu State ───────────────────────────────────────────────
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -20,10 +16,9 @@ export default function Dashboard() {
     navigate({ to: '/login' });
   };
 
-  // Helper function to handle tab changes and auto-close the mobile menu
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setIsMobileMenuOpen(false); // Auto-close on mobile when a link is clicked
+    setIsMobileMenuOpen(false);
   };
 
   const getTabClass = (tabName) => {
@@ -267,79 +262,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-6 font-sans flex flex-col gap-4 md:gap-6 bg-[#fdfbfb]">
-      
-      {/* ════ TOP NAVIGATION BAR ════ */}
-      <header className="w-full bg-white rounded-full px-4 py-3 flex items-center justify-between shadow-[0_2px_20px_rgb(0,0,0,0.03)] border border-zinc-100 relative z-50">
-        <div className="flex items-center gap-3 pl-2">
-          {/* Hamburger Menu - Only visible on Mobile */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 -ml-2 text-zinc-600 hover:text-zinc-900 focus:outline-none"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-
-          <Link to="/" className="flex items-center gap-2 text-lg md:text-xl font-bold text-zinc-900 tracking-tight hover:opacity-80 transition-opacity" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>
-            <div className="w-8 h-8 rounded-full bg-[#ffe4ea] flex items-center justify-center shadow-sm">
-              <Flower2 size={18} strokeWidth={2.5} color="#ff059f" />
-            </div>
-            <span className="hidden sm:block">NihonSensei<span style={{ color: '#ff059f' }}>.lk</span></span>
-          </Link>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <button type="button" onClick={handleLogout} className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#ff059f] hover:bg-[#be1640] text-white rounded-full text-xs md:text-sm font-semibold transition-all shadow-md shadow-rose-500/20">
-            <LogOut size={16} strokeWidth={2.5} /> <span className="hidden sm:block">Logout</span>
-          </button>
-        </div>
-      </header>
-
-      {/* ════ MAIN LAYOUT ════ */}
-      <div className="flex flex-1 gap-6 overflow-hidden relative">
-        
-        {/* ── MOBILE OVERLAY (Darkens background when menu is open) ── */}
-        {isMobileMenuOpen && (
-          <div 
-            className="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm z-40 lg:hidden rounded-3xl m-4 md:m-6"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
-
-        {/* ── SIDEBAR NAVIGATION ── */}
-        <aside className={`
-          absolute lg:relative z-50 lg:z-0
-          transform transition-transform duration-300 ease-in-out
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-[120%] lg:translate-x-0'}
-          w-64 bg-white rounded-[2rem] p-6 shadow-[0_10px_40px_rgb(0,0,0,0.08)] lg:shadow-[0_2px_20px_rgb(0,0,0,0.02)] border border-zinc-100 flex flex-col shrink-0 h-full
-        `}>
-          <nav className="flex flex-col gap-2 overflow-y-auto">
-            <button onClick={() => handleTabChange('dashboard')} className={getTabClass('dashboard')}>
-              <LayoutDashboard size={20} strokeWidth={2.5} /> Dashboard
-            </button>
-            <button onClick={() => handleTabChange('live')} className={getTabClass('live')}>
-              <CalendarDays size={20} strokeWidth={2.5} /> Live Classes
-            </button>
-            <button onClick={() => handleTabChange('recordings')} className={getTabClass('recordings')}>
-              <Video size={20} strokeWidth={2.5} /> Recordings
-            </button>
-            <button onClick={() => handleTabChange('materials')} className={getTabClass('materials')}>
-              <BookOpen size={20} strokeWidth={2.5} /> Study Materials
-            </button>
-            <div className="mt-auto pt-4">
-              <button onClick={() => handleTabChange('settings')} className={getTabClass('settings')}>
-                <Settings size={20} strokeWidth={2.5} /> Settings
-              </button>
-            </div>
-          </nav>
-        </aside>
-
-        {/* ── DYNAMIC DASHBOARD CONTENT AREA ── */}
-        <main className="flex-1 rounded-[2rem] lg:rounded-[2.5rem] p-6 md:p-8 lg:p-12 overflow-y-auto w-full"
-              style={{ background: 'linear-gradient(135deg, #fff0f3 0%, #fffafb 50%, #ffe4ea 100%)' }}>
-          {renderContent()}
-        </main>
-      </div>
-    </div>
+    <DashboardLayout
+      activeTab={activeTab}
+      isMobileMenuOpen={isMobileMenuOpen}
+      onLogout={handleLogout}
+      onTabChange={handleTabChange}
+      onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+    >
+      {renderContent()}
+    </DashboardLayout>
   );
 }
