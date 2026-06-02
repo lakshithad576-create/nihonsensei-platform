@@ -4,7 +4,7 @@ import {
   X, Bell, LogOut, LayoutDashboard, CalendarDays, 
   Video, BookOpen, Settings, PanelLeftClose,
   Flower2, Users, ShieldCheck, Plus, Trash2, Edit3, Save, 
-  FolderPlus, Search, UploadCloud, ImagePlus, Link2
+  FolderPlus, Search, UploadCloud, ImagePlus, Link2, FileText
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -69,7 +69,6 @@ export default function AdminDashboard() {
     );
   };
 
-  // ADDED SAFETY CHECK: Prevent deletion of core categories
   const handleRemoveCategory = (categoryToRemove) => {
     if (categoryToRemove === 'Live Zoom Classes') {
       alert("The 'Live Zoom Classes' core category cannot be deleted.");
@@ -101,6 +100,31 @@ export default function AdminDashboard() {
 
   const handleDeleteRecording = (id) => {
     setRecordings(recordings.filter(r => r.id !== id));
+  };
+
+  // ─── STATE: Study Materials (PDFs) ───────────────────────────────────────
+  const [materials, setMaterials] = useState([
+    { id: 1, title: 'Hiragana Practice Sheet', category: 'Grammar Particles', size: '1.2 MB' },
+    { id: 2, title: 'Restaurant Vocab Flashcards', category: 'Spoken Practice', size: '3.4 MB' }
+  ]);
+
+  const [materialData, setMaterialData] = useState({ title: '', category: '' });
+
+  const handleMaterialSubmit = (e) => {
+    e.preventDefault();
+    const newMat = {
+      id: Date.now(),
+      title: materialData.title,
+      category: materialData.category || categories[0],
+      size: (Math.random() * 3 + 1).toFixed(1) + ' MB' // Simulating file size
+    };
+    setMaterials([...materials, newMat]);
+    alert(`Study material "${materialData.title}" published successfully!`);
+    setMaterialData({ title: '', category: '' });
+  };
+
+  const handleDeleteMaterial = (id) => {
+    setMaterials(materials.filter(m => m.id !== id));
   };
 
   // ─── STATE: Live Zoom Classes ─────────────────────────────────────────────
@@ -274,6 +298,74 @@ export default function AdminDashboard() {
           </div>
         );
 
+      // ════ UPLOAD STUDY MATERIALS TAB ════
+      case 'materials':
+        return (
+          <div className="flex-1 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-3xl font-bold text-zinc-900 mb-2 tracking-tight" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>Study Materials</h2>
+            <p className="text-zinc-500 text-sm mb-8">Upload PDF worksheets, flashcards, and lesson notes for specific categories.</p>
+
+            {/* Upload Form */}
+            <form onSubmit={handleMaterialSubmit} className="bg-white rounded-[2rem] p-8 border border-zinc-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col lg:flex-row gap-8 mb-10">
+              <div className="flex-1">
+                <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-3">Upload PDF</label>
+                <div className="w-full h-56 border-2 border-dashed border-zinc-200 rounded-[1.5rem] bg-zinc-50 hover:bg-[#fff0f3]/50 hover:border-[#de1d4d]/30 transition-all flex flex-col items-center justify-center cursor-pointer group">
+                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 group-hover:scale-110 group-hover:text-[#de1d4d] transition-all">
+                    <FileText size={24} strokeWidth={2} className="text-zinc-400 group-hover:text-[#de1d4d]" />
+                  </div>
+                  <p className="font-bold text-zinc-700 text-sm mb-1">Click to browse or drag document</p>
+                  <p className="text-[11px] text-zinc-400">PDF, DOCX or ZIP (Max. 50MB)</p>
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col gap-5">
+                <div>
+                  <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Document Title</label>
+                  <input type="text" required placeholder="e.g. N5 Kanji Practice Sheet" value={materialData.title} onChange={e => setMaterialData({...materialData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:outline-none focus:border-[#de1d4d] focus:ring-1 focus:ring-[#de1d4d] text-sm" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Category Assignment</label>
+                  <select required value={materialData.category} onChange={e => setMaterialData({...materialData, category: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:outline-none focus:border-[#de1d4d] focus:ring-1 focus:ring-[#de1d4d] text-sm bg-white cursor-pointer">
+                    <option value="" disabled>Select a category...</option>
+                    {categories.map((cat, idx) => <option key={idx} value={cat}>{cat}</option>)}
+                  </select>
+                </div>
+                
+                <div className="mt-auto pt-2">
+                  <button type="submit" className="w-full py-3 bg-[#de1d4d] hover:bg-[#be1640] text-white rounded-xl font-bold text-sm transition-colors shadow-md flex items-center justify-center gap-2">
+                    <UploadCloud size={16} /> Publish Material
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            {/* Manage Existing Materials */}
+            <h3 className="font-bold text-zinc-900 mb-4">Manage Uploaded Materials</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {materials.length === 0 ? (
+                <p className="text-sm text-zinc-500 italic col-span-2">No materials uploaded yet.</p>
+              ) : (
+                materials.map(mat => (
+                  <div key={mat.id} className="bg-white p-4 rounded-2xl border border-zinc-100 shadow-sm flex items-center justify-between group hover:border-zinc-200 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-[#fff0f3] flex items-center justify-center text-[#de1d4d] shrink-0">
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-zinc-900 text-sm line-clamp-1">{mat.title}</h4>
+                        <p className="text-xs text-zinc-500 mt-0.5">{mat.category} • {mat.size}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => handleDeleteMaterial(mat.id)} className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all shrink-0">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        );
+
       // ════ DAILY VOCABULARY TAB ════
       case 'vocab':
         return (
@@ -355,7 +447,6 @@ export default function AdminDashboard() {
                       <th key={idx} className="p-6 font-bold text-center">
                         <div className="flex items-center justify-center gap-2">
                           {category}
-                          {/* UPDATED: Only show the delete X if the category is NOT 'Live Zoom Classes' */}
                           {category !== 'Live Zoom Classes' && (
                             <button onClick={() => handleRemoveCategory(category)} className="text-zinc-400 hover:text-red-500 transition-colors">
                               <X size={14} />
@@ -449,21 +540,29 @@ export default function AdminDashboard() {
             </div>
             
             <h3 className="text-xl font-bold text-zinc-900 mb-4 mt-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <button onClick={() => setActiveTab('classes')} className="flex items-center justify-between p-6 bg-white rounded-[1.5rem] border border-zinc-100 hover:border-[#de1d4d] transition-colors group text-left shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <button onClick={() => setActiveTab('classes')} className="flex flex-col p-6 bg-white rounded-[1.5rem] border border-zinc-100 hover:border-[#de1d4d] transition-colors group text-left shadow-sm">
+                 <CalendarDays className="text-zinc-300 group-hover:text-[#de1d4d] transition-colors mb-3" />
                  <div>
-                   <p className="font-bold text-zinc-900 group-hover:text-[#de1d4d] transition-colors">Schedule Live Class</p>
+                   <p className="font-bold text-zinc-900 group-hover:text-[#de1d4d] transition-colors">Schedule Class</p>
                    <p className="text-xs text-zinc-500 mt-1">Add a new Zoom session</p>
                  </div>
-                 <CalendarDays className="text-zinc-300 group-hover:text-[#de1d4d] transition-colors" />
                </button>
                
-               <button onClick={() => setActiveTab('upload')} className="flex items-center justify-between p-6 bg-white rounded-[1.5rem] border border-zinc-100 hover:border-[#de1d4d] transition-colors group text-left shadow-sm">
+               <button onClick={() => setActiveTab('upload')} className="flex flex-col p-6 bg-white rounded-[1.5rem] border border-zinc-100 hover:border-[#de1d4d] transition-colors group text-left shadow-sm">
+                 <Video className="text-zinc-300 group-hover:text-[#de1d4d] transition-colors mb-3" />
                  <div>
-                   <p className="font-bold text-zinc-900 group-hover:text-[#de1d4d] transition-colors">Manage Recordings</p>
-                   <p className="text-xs text-zinc-500 mt-1">Upload or delete class videos</p>
+                   <p className="font-bold text-zinc-900 group-hover:text-[#de1d4d] transition-colors">Upload Video</p>
+                   <p className="text-xs text-zinc-500 mt-1">Add to Recordings</p>
                  </div>
-                 <Video className="text-zinc-300 group-hover:text-[#de1d4d] transition-colors" />
+               </button>
+
+               <button onClick={() => setActiveTab('materials')} className="flex flex-col p-6 bg-white rounded-[1.5rem] border border-zinc-100 hover:border-[#de1d4d] transition-colors group text-left shadow-sm">
+                 <FileText className="text-zinc-300 group-hover:text-[#de1d4d] transition-colors mb-3" />
+                 <div>
+                   <p className="font-bold text-zinc-900 group-hover:text-[#de1d4d] transition-colors">Upload PDF</p>
+                   <p className="text-xs text-zinc-500 mt-1">Add Study Materials</p>
+                 </div>
                </button>
             </div>
           </div>
@@ -516,6 +615,9 @@ export default function AdminDashboard() {
             </button>
             <button onClick={() => setActiveTab('upload')} className={getTabClass('upload')}>
               <UploadCloud size={20} strokeWidth={2.5} /> Recordings
+            </button>
+            <button onClick={() => setActiveTab('materials')} className={getTabClass('materials')}>
+              <FileText size={20} strokeWidth={2.5} /> Study Materials
             </button>
             <div className="mt-auto pt-4 border-t border-zinc-100">
               <button onClick={() => setActiveTab('settings')} className={getTabClass('settings')}>
