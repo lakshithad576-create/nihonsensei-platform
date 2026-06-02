@@ -10,10 +10,15 @@ router.get("/", protect, adminOnly, async (req, res, next) => {
   try {
     const snapshot = await db.collection("users").get();
 
-    const students = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const students = snapshot.docs.map((doc) => {
+  const data = doc.data();
+  delete data.passwordHash;
+
+  return {
+    id: doc.id,
+    ...data,
+  };
+});
 
     res.json({
       success: true,

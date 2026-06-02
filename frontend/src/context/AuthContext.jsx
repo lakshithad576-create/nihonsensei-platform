@@ -21,11 +21,14 @@ export function AuthProvider({ children }) {
 
     try {
       const data = await apiRequest("/auth/me");
+
       setCurrentUser(data.user);
       setUserProfile(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
     } catch (error) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+
       setCurrentUser(null);
       setUserProfile(null);
     } finally {
@@ -40,7 +43,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const data = await apiRequest("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     localStorage.setItem("token", data.token);
@@ -55,7 +58,7 @@ export function AuthProvider({ children }) {
   const signup = async (payload) => {
     const data = await apiRequest("/auth/signup", {
       method: "POST",
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     localStorage.setItem("token", data.token);
@@ -70,7 +73,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await apiRequest("/auth/logout", {
-        method: "POST"
+        method: "POST",
       });
     } catch (error) {
       console.log("Logout API failed, clearing frontend token anyway");
@@ -89,7 +92,8 @@ export function AuthProvider({ children }) {
     loading,
     login,
     signup,
-    logout
+    logout,
+    loadUser,
   };
 
   return (
@@ -99,4 +103,12 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used inside an AuthProvider");
+  }
+
+  return context;
+};
