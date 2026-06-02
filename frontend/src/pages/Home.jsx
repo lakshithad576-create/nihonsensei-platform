@@ -276,7 +276,7 @@ export default function Home() {
               Meet Your Sensei: Dedicated to Your Success
             </h2>
             <p className="text-zinc-600 max-w-2xl mx-auto leading-relaxed text-base font-light">
-              Our experienced Japanese teacher, Sensei Ayami, brings years of expertise and a 
+              Our experienced Japanese teacher, Sensei Yureka, brings years of expertise and a 
               passion for language education. With a student-centric approach, she makes learning 
               Japanese both effective and enjoyable.
             </p>
