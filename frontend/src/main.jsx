@@ -11,6 +11,7 @@ import LoginCallback from './routes/LoginCallback';
 import Dashboard from './pages/Dashboard';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
+import VerifyOTP from './pages/VerifyOTP'; // Adjust path if needed
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -69,10 +70,17 @@ const adminRoute = createRoute({
   component: ProtectedAdminRoute,
 });
 
+const verifyOtpRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/verify-otp',
+  component: VerifyOTP,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   loginCallbackRoute,
+  verifyOtpRoute,
   dashboardRoute,
   signupRoute,
   adminRoute,
