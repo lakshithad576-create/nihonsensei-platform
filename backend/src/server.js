@@ -2,11 +2,14 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
+// ─── ROUTE IMPORTS ───────────────────────────────────────
 import authRoutes from "./routes/auth.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import recordingRoutes from "./routes/recording.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import vocabRoutes from "./routes/vocab.routes.js";
+import contactRoutes from "./routes/contact.routes.js"; // 👈 New import added
 
 dotenv.config();
 
@@ -28,13 +31,15 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/auth", authRoutes);
+// ─── MOUNT ROUTES ────────────────────────────────────────
+app.use("/api/auth", authRoutes); // (Removed the duplicate line here)
 app.use("/api/categories", categoryRoutes);
 app.use("/api/recordings", recordingRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/vocab", vocabRoutes);
+app.use("/api/contact", contactRoutes); // 👈 New route mounted
 
+// ─── ERROR HANDLING ──────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error(err);
 

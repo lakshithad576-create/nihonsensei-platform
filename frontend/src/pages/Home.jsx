@@ -137,16 +137,38 @@ export default function Home() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleContactSubmit = (e) => {
+  // ─── UPDATED: Actual Backend Connection ─────────────────────────────────
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Send the data to your Node.js backend route
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send message');
+      }
+
+      // Success! Show the checkmark screen
       setIsSent(true);
-      setFormData({ name: '', email: '', message: '' }); 
-      setTimeout(() => setIsSent(false), 3000); 
-    }, 1500);
+      setFormData({ name: '', email: '', message: '' }); // Clear the form
+      
+      // Hide the success message after 4 seconds
+      setTimeout(() => setIsSent(false), 4000); 
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Sorry, there was a problem sending your message. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -458,23 +480,34 @@ export default function Home() {
               initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
               className="space-y-8 pt-4"
             >
+              {/* Email Block */}
               <div className="flex items-start gap-5 group">
                 <div className="w-14 h-14 bg-[#fff0f3] rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#fd45e7] group-hover:text-white text-[#de1d4d] transition-colors duration-300 shadow-sm">
                   <Mail size={24} />
                 </div>
                 <div className="pt-1">
                   <h4 className="text-zinc-900 font-bold text-lg mb-1">Email Us</h4>
-                  <a href="mailto:hello@nihonsensei.lk" className="text-zinc-600 hover:text-[#de1d4d] transition-colors">hello@nihonsensei.lk</a>
+                  <a href="mailto:ydilrukshi393@gmail.com" className="text-zinc-600 hover:text-[#de1d4d] transition-colors">
+                    ydilrukshi393@gmail.com
+                  </a>
                 </div>
               </div>
 
+              {/* WhatsApp Block */}
               <div className="flex items-start gap-5 group">
                 <div className="w-14 h-14 bg-[#fff0f3] rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#fd45e7] group-hover:text-white text-[#de1d4d] transition-colors duration-300 shadow-sm">
                   <Phone size={24} />
                 </div>
                 <div className="pt-1">
-                  <h4 className="text-zinc-900 font-bold text-lg mb-1">Call Us</h4>
-                  <a href="tel:+94771234567" className="text-zinc-600 hover:text-[#de1d4d] transition-colors">+94 77 123 4567</a>
+                  <h4 className="text-zinc-900 font-bold text-lg mb-1">Whatsapp</h4>
+                  <a 
+                    href="https://wa.me/94701767138" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-zinc-600 hover:text-[#de1d4d] transition-colors"
+                  >
+                    +94 70 176 7138
+                  </a>
                 </div>
               </div>
 
@@ -484,7 +517,7 @@ export default function Home() {
                 </div>
                 <div className="pt-1">
                   <h4 className="text-zinc-900 font-bold text-lg mb-1">Location</h4>
-                  <p className="text-zinc-600">Colombo, Sri Lanka<br/>(Online courses available globally)</p>
+                  <p className="text-zinc-600">Galgamuwa, Sri Lanka<br/></p>
                 </div>
               </div>
             </motion.div>
