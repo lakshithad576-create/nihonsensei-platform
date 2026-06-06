@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import VerifyOTP from './pages/VerifyOTP'; // Adjust path if needed
+import ForgotPassword from './pages/ForgotPassword'
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -68,11 +69,17 @@ const verifyOtpRoute = createRoute({
   component: VerifyOTP,
 });
 
+const forgotPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/forgot-password',
+  component: ForgotPassword,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
-  loginCallbackRoute,
   verifyOtpRoute,
+  forgotPasswordRoute,
   dashboardRoute,
   signupRoute,
   adminRoute,

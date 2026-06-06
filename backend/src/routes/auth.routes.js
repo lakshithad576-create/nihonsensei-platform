@@ -231,4 +231,105 @@ router.post("/logout", protect, async (req, res) => {
   return res.json({ success: true, message: "Logout successful. Please remove token from frontend." });
 });
 
+// ==========================================
+// 3️⃣ FORGOT PASSWORD: Request Reset OTP
+// ==========================================
+router.post("/forgot-password", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    // Check if the user actually exists
+    const userSnapshot = await db.collection("users").where("email", "==", normalizedEmail).limit(1).get();
+    if (userSnapshot.empty) {
+      return res.status(404).json({ success: false, message: "No account found with that email address." });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 15 * 60 * 1000; // Expires in 15 mins
+
+    // Save it to a separate "passwordResets" collection
+    await db.collection("passwordResets").doc(normalizedEmail).set({
+      otp,
+      expiresAt
+    });
+
+    // Send the email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: normalizedEmail,
+      subject: 'Password Reset - NihonSensei',
+      html: `<h2>Password Reset Request</h2>
+             <p>Your password reset code is: <b style="font-size: 24px; color: #de1d4d; letter-spacing: 2px;">${otp}</b></p>
+             <p>This code will expire in 15 minutes. If you did not request this, you can safely ignore this email.</p>`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ success: true, message: "Password reset code sent to your email." });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ==========================================
+// 4️⃣ RESET PASSWORD: Verify OTP & Change Password
+// ==========================================
+router.post("/reset-password", async (req, res, next) => {
+  try {
+    const { email, otp, newPassword, confirmNewPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ success: false, message: "Passwords do not match" });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Verify the OTP
+    const resetDocRef = db.collection("passwordResets").doc(normalizedEmail);
+    const resetDoc = await resetDocRef.get();
+
+    if (!resetDoc.exists) {
+      return res.status(400).json({ success: false, message: "No reset request found. Please try again." });
+    }
+
+    const resetData = resetDoc.data();
+    
+    if (resetData.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid verification code." });
+    }
+    if (Date.now() > resetData.expiresAt) {
+      return res.status(400).json({ success: false, message: "Verification code has expired." });
+    }
+
+    // Hash the new password
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    // Find the user and update their password
+    const userSnapshot = await db.collection("users").where("email", "==", normalizedEmail).limit(1).get();
+    const userDoc = userSnapshot.docs[0];
+
+    await userDoc.ref.update({
+      passwordHash,
+      updatedAt: new Date().toISOString()
+    });
+
+    // Delete the OTP so it can't be used again
+    await resetDocRef.delete();
+
+    res.json({ success: true, message: "Password reset successfully. You can now log in." });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

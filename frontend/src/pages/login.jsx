@@ -301,14 +301,14 @@ export default function Login() {
             </div>
 
             {/* Forgot Password Link */}
-            <div className="flex justify-end pt-1">
-              <a
-                href="#"
-                className="text-[#ff059f] text-xs font-bold hover:underline"
-              >
-                Forgot password?
-              </a>
-            </div>
+<div className="flex justify-end pt-1">
+  <Link
+    to="/forgot-password"
+    className="text-[#ff059f] text-xs font-bold hover:underline"
+  >
+    Forgot password?
+  </Link>
+</div>
 
             {/* Submit Button */}
             <button
