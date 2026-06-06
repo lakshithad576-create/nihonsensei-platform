@@ -71,8 +71,8 @@ export default function Signup() {
         className="bg-white rounded-[2.5rem] p-10 md:p-14 w-full max-w-2xl shadow-xl shadow-rose-100/50 relative z-10"
       >
         <div className="mb-8">
-          <p className="text-[#de1d4d] text-2xl mb-1 tracking-widest font-serif">ようこそ</p>
-          <h1 className="text-4xl font-bold text-zinc-900 mb-2 tracking-tight" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>Create your account</h1>
+          <p className="text-[#de1d4d] text-2xl mb-1 tracking-widest">ようこそ</p>
+          <h1 className="text-4xl font-normal text-zinc-900 mb-2 tracking-tight">Create your account</h1>
           <p className="text-zinc-600 text-sm">Free first week. Cancel anytime.</p>
         </div>
 

@@ -239,10 +239,7 @@ export default function Login() {
           className="w-full max-w-[420px] bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.04)] border border-zinc-100"
         >
           {/* Card Header */}
-          <h2
-            className="text-3xl font-bold text-zinc-900 mb-2 tracking-tight"
-            style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
-          >
+          <h2 className="text-3xl font-normal text-zinc-900 mb-2 tracking-tight">
             Email login
           </h2>
           <p className="text-zinc-500 text-sm mb-8">

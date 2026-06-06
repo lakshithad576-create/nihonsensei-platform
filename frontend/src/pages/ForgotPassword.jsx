@@ -102,7 +102,7 @@ export default function ForgotPassword() {
               <div className="w-14 h-14 bg-[#fff0f3] rounded-full flex items-center justify-center mb-6">
                 <KeyRound size={28} className="text-[#de1d4d]" />
               </div>
-              <h1 className="text-3xl font-bold text-zinc-900 mb-2" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>Reset Password</h1>
+              <h1 className="text-3xl font-normal text-zinc-900 mb-2 tracking-tight">Reset Password</h1>
               <p className="text-zinc-600 text-sm">Enter the email associated with your account and we'll send a code with instructions to reset your password.</p>
             </div>
 
@@ -138,7 +138,7 @@ export default function ForgotPassword() {
             className="bg-white rounded-[2.5rem] p-10 md:p-14 w-full max-w-md shadow-xl shadow-rose-100/50 relative z-10"
           >
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-zinc-900 mb-2" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>Create New Password</h1>
+              <h1 className="text-3xl font-normal text-zinc-900 mb-2 tracking-tight">Create New Password</h1>
               <p className="text-zinc-600 text-sm">We sent a 6-digit code to <b>{email}</b>.</p>
             </div>
 
