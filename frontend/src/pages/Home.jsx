@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlayCircle, BookOpen, Video, Plus, Star, User, ArrowRight, Flower2 } from 'lucide-react';
-import heroImage from '../assets/japan.png';
-import teacherImage from '../assets/teacher.png';
+import { PlayCircle, BookOpen, Video, Plus, Star, User, ArrowRight, Flower2, Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
 // ─── FAQ Data ───────────────────────────────────────────────────────────────
@@ -119,7 +117,7 @@ const FaqCard = ({ question, answer, i }) => {
 
 // ─── Decorative background petals ──────────────────────────────────────────
 const petalPositions = [
-  { top: '8%',  left: '7%',  size: 38, delay: 0,    dur: 7,  color: 'text-sakura-300', rot: 15  },
+  { top: '8%',  left: '7%',  size: 38, delay: 0,   dur: 7,  color: 'text-sakura-300', rot: 15  },
   { top: '18%', left: '88%', size: 28, delay: 1.2,  dur: 9,  color: 'text-sakura-200', rot: -20 },
   { top: '55%', left: '4%',  size: 22, delay: 0.6,  dur: 8,  color: 'text-sakura-300', rot: 30  },
   { top: '72%', left: '93%', size: 32, delay: 2.1,  dur: 11, color: 'text-sakura-200', rot: -10 },
@@ -129,17 +127,38 @@ const petalPositions = [
 
 // ═══════════════════════════════════════════════════════════════════════════
 export default function Home() {
+
+  // ─── Contact Form State ────────────────────────────────────────────────
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+
+  const handleContactChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSent(true);
+      setFormData({ name: '', email: '', message: '' }); 
+      setTimeout(() => setIsSent(false), 3000); 
+    }, 1500);
+  };
+
   return (
     <div
       className="min-h-screen font-sans overflow-x-hidden"
       style={{ background: 'linear-gradient(160deg, #fff0f3 0%, #fffafb 40%, #fff5f6 100%)' }}
     >
       
-      {/* ════ NAVBAR (Now only on the Home Page) ════ */}
+      {/* ════ NAVBAR ════ */}
       <div className="absolute top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
         <nav className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/40 rounded-full px-6 py-3 flex items-center justify-between pointer-events-auto transition-all">
           
-          {/* Left: Logo */}
           <Link 
             to="/" 
             className="flex items-center gap-2 text-xl md:text-2xl font-bold text-zinc-900 tracking-tight hover:opacity-80 transition-opacity"
@@ -151,14 +170,12 @@ export default function Home() {
             <span>NihonSensei<span style={{ color: '#ff059f' }}>.lk</span></span>
           </Link>
 
-          {/* Center: Navigation Links */}
           <div className="hidden md:flex items-center gap-8 font-sans text-sm font-medium text-zinc-600">
             <Link to="/" className="hover:text-[#ff059f] transition-colors">Home</Link>
             <Link to="/about" className="hover:text-[#ff059f] transition-colors">About</Link>
             <Link to="/contact" className="hover:text-[#ff059f] transition-colors">Contact</Link>
           </div>
 
-          {/* Right: Login Button */}
           <Link 
             to="/login" 
             className="flex items-center gap-2 px-6 py-2.5 font-sans bg-[#ff059f] text-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-[#ff059f]/40 hover:scale-105 transition-all"
@@ -172,7 +189,7 @@ export default function Home() {
         </nav>
       </div>
 
-      {/* ── Floating background petals (whole page) ─────────────────── */}
+      {/* ── Floating background petals ─────────────────── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {petalPositions.map((p, i) => (
           <motion.div
@@ -187,10 +204,8 @@ export default function Home() {
         ))}
       </div>
 
-      {/* ════ 1. HERO ══════════════════════════════════════════════════ */}
+      {/* ════ 1. HERO ════ */}
       <section className="relative pt-32 pb-24 lg:pt-52 lg:pb-36 overflow-hidden antialiased">
-
-        {/* Hero image - Completely clear */}
         <div className="absolute inset-0 z-0">
           <motion.img
             src="https://res.cloudinary.com/dci2l752v/image/upload/q_auto/f_auto/v1780213240/japan_oadsan.png"
@@ -200,16 +215,12 @@ export default function Home() {
             animate={{ scale: 1.06 }}
             transition={{ duration: 16, ease: 'easeInOut', repeat: Infinity, repeatType: 'reverse' }}
           />
-          
-          {/* Bottom fade into page bg so it transitions smoothly */}
           <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
             style={{ background: 'linear-gradient(to top, #fff5f6, transparent)' }} />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl"> 
-
-            {/* Main title - Reduced boldness (font-normal) for an elegant, sleek look */}
             <motion.h1
               className="text-6xl lg:text-7xl font-normal text-white leading-tight mb-6 tracking-tight"
               style={{ textShadow: '0 4px 32px rgba(245, 17, 184, 0.4), 0 2px 8px rgba(0, 0, 0, 0.6)' }}
@@ -221,7 +232,6 @@ export default function Home() {
               NihonSensei.lk
             </motion.h1>
 
-            {/* Subtitle - Swapped to font-light for a clean, modern aesthetic */}
             <motion.p
               className="text-lg lg:text-xl text-white/95 mb-10 max-w-2xl leading-relaxed font-light"
               style={{ textShadow: '0 2px 12px rgba(0, 0, 0, 0.8)' }}
@@ -235,42 +245,31 @@ export default function Home() {
               className="flex flex-wrap items-center gap-4"
               variants={fadeUp} initial="hidden" animate="visible" custom={0.38}
             >
-              {/* Primary button - "Get Start" */}
               <Link to="/signup">
                 <Btn
                   className="px-8 py-3.5 text-white rounded-full font-medium flex items-center gap-2.5 shadow-xl hover:scale-105 transition-all"
-                  style={{
-                    background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)',
-                  }}
+                  style={{ background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)' }}
                 >
                   <PlayCircle size={20} />
                   Get Start
                 </Btn>
               </Link>
               
-              {/* Secondary button - "About Me" updated to match the solid pink gradient */}
               <Btn
                 className="px-8 py-3.5 text-white rounded-full font-medium flex items-center gap-2.5 shadow-xl hover:scale-105 transition-all"
-                style={{
-                  background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)',
-                }}
+                style={{ background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)' }}
               >
                 <User size={20} />
                 About Me
               </Btn>
             </motion.div>
-
           </div>
         </div>
       </section>
         
-
-     {/* ════ 2. MEET YOUR SENSEI ══════════════════════════════════════ */}
+      {/* ════ 2. MEET YOUR SENSEI ════ */}
       <section className="py-24 relative overflow-hidden bg-zinc-50 antialiased">
-        
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
-          
-          {/* Section Header */}
           <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="visible" viewport={vp}>
             <h2 className="text-4xl md:text-5xl font-normal text-zinc-900 mb-4 tracking-tight">
               Meet Your Sensei: Dedicated to Your Success
@@ -282,10 +281,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Flex Layout: 40% Width for Card, 60% Width for Image */}
           <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-            
-            {/* LEFT COLUMN: The White Feature Card */}
             <motion.div 
               className="bg-white rounded-[2.5rem] p-10 shadow-sm w-full lg:w-[40%] flex flex-col justify-center"
               variants={slideLeft} initial="hidden" whileInView="visible" viewport={vp}
@@ -300,7 +296,6 @@ export default function Home() {
                   className={`flex flex-col gap-4 ${i !== 2 ? 'border-b border-zinc-100 pb-6 mb-6' : ''}`}
                   variants={fadeUp} initial="hidden" whileInView="visible" viewport={vp} custom={i * 0.13}
                 >
-                  {/* Bulletproof Pink Circle Icon */}
                   <div 
                     className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: '#ff059f', color: '#ffffff' }}
@@ -315,7 +310,6 @@ export default function Home() {
               ))}
             </motion.div>
 
-            {/* RIGHT COLUMN: The Teacher Image (Now perfectly horizontal) */}
             <motion.div
               className="rounded-[2.5rem] overflow-hidden shadow-sm w-full lg:w-[60%]"
               variants={slideRight} initial="hidden" whileInView="visible" viewport={vp}
@@ -326,19 +320,16 @@ export default function Home() {
                 className="w-full h-full object-cover"
               />
             </motion.div>
-            
           </div>
         </div>
       </section>
 
-      {/* ════ 3. PATH TO FLUENCY ═══════════════════════════════════════ */}
+      {/* ════ 3. PATH TO FLUENCY ════ */}
       <section className="py-24 bg-white relative overflow-hidden antialiased">
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(255,194,207,0.22) 0%, transparent 60%)' }} />
 
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
-          
-          {/* Section Header */}
           <motion.div className="text-center mb-20" variants={fadeUp} initial="hidden" whileInView="visible" viewport={vp}>
             <p className="font-sans text-sakura-500 font-semibold tracking-widest text-sm uppercase mb-3">How It Works</p>
             <h2 className="text-4xl md:text-5xl font-sans font-normal text-zen-900 mb-4 tracking-tight">
@@ -351,7 +342,6 @@ export default function Home() {
           </motion.div>
 
           <div className="space-y-28">
-            {/* Step 1 */}
             <div className="flex flex-col md:flex-row items-center gap-14">
               <motion.div className="md:w-1/2" variants={slideLeft} initial="hidden" whileInView="visible" viewport={vp}>
                 <span className="inline-block font-sans text-xs font-bold tracking-widest text-sakura-400 uppercase mb-4 px-3 py-1 rounded-full border border-sakura-200 bg-sakura-50">
@@ -377,7 +367,6 @@ export default function Home() {
               </motion.div>
             </div>
 
-            {/* Step 2 */}
             <div className="flex flex-col md:flex-row-reverse items-center gap-14">
               <motion.div className="md:w-1/2" variants={slideRight} initial="hidden" whileInView="visible" viewport={vp}>
                 <span className="inline-block font-sans text-xs font-bold tracking-widest text-sakura-400 uppercase mb-4 px-3 py-1 rounded-full border border-sakura-200 bg-sakura-50">
@@ -407,7 +396,7 @@ export default function Home() {
         </div>
       </section>
     
-      {/* ════ 4. FAQ ════════════════════════════════════════════════════ */}
+      {/* ════ 4. FAQ ════ */}
       <section className="py-24 relative overflow-hidden"
         style={{ background: 'linear-gradient(180deg, #fff0f3 0%, #ffe4ea 100%)' }}
       >
@@ -437,16 +426,147 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════ 5. FOOTER ════════════════════════════════════════════════ */}
+      {/* ════ 5. CONTACT SECTION ════ */}
+      <section id="contact" className="py-24 relative bg-white border-t border-rose-50">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(255,194,207,0.22) 0%, transparent 60%)' }} />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="text-[#de1d4d] font-bold tracking-widest text-sm uppercase mb-3"
+            >
+              Get in touch
+            </motion.p>
+            <motion.h2 
+              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="text-4xl md:text-5xl font-normal text-zinc-900 tracking-tight mb-4" 
+            >
+              Let's start your Japanese journey
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+              className="text-zinc-600 text-lg"
+            >
+              Have questions about our courses or need help deciding your level? Drop us a message and our sensei will get back to you.
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+              className="space-y-8 pt-4"
+            >
+              <div className="flex items-start gap-5 group">
+                <div className="w-14 h-14 bg-[#fff0f3] rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#fd45e7] group-hover:text-white text-[#de1d4d] transition-colors duration-300 shadow-sm">
+                  <Mail size={24} />
+                </div>
+                <div className="pt-1">
+                  <h4 className="text-zinc-900 font-bold text-lg mb-1">Email Us</h4>
+                  <a href="mailto:hello@nihonsensei.lk" className="text-zinc-600 hover:text-[#de1d4d] transition-colors">hello@nihonsensei.lk</a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-5 group">
+                <div className="w-14 h-14 bg-[#fff0f3] rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#fd45e7] group-hover:text-white text-[#de1d4d] transition-colors duration-300 shadow-sm">
+                  <Phone size={24} />
+                </div>
+                <div className="pt-1">
+                  <h4 className="text-zinc-900 font-bold text-lg mb-1">Call Us</h4>
+                  <a href="tel:+94771234567" className="text-zinc-600 hover:text-[#de1d4d] transition-colors">+94 77 123 4567</a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-5 group">
+                <div className="w-14 h-14 bg-[#fff0f3] rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#fd45e7] group-hover:text-white text-[#de1d4d] transition-colors duration-300 shadow-sm">
+                  <MapPin size={24} />
+                </div>
+                <div className="pt-1">
+                  <h4 className="text-zinc-900 font-bold text-lg mb-1">Location</h4>
+                  <p className="text-zinc-600">Colombo, Sri Lanka<br/>(Online courses available globally)</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+              className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-xl shadow-rose-100/40 border border-rose-50"
+            >
+              {isSent ? (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} 
+                  className="flex flex-col items-center justify-center text-center h-full py-12"
+                >
+                  <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle2 size={40} className="text-emerald-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-zinc-900 mb-2">Message Sent!</h3>
+                  <p className="text-zinc-600">Arigatou gozaimasu! We will get back to you within 24 hours.</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleContactSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-2">Your Name</label>
+                    <input 
+                      type="text" 
+                      name="name" 
+                      required 
+                      value={formData.name} 
+                      onChange={handleContactChange} 
+                      placeholder="Tanaka Yuki" 
+                      className="w-full px-5 py-3.5 rounded-2xl border border-zinc-200 focus:outline-none focus:border-[#de1d4d] focus:ring-1 focus:ring-[#de1d4d] transition-colors bg-zinc-50/50 focus:bg-white text-zinc-800" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-2">Email Address</label>
+                    <input 
+                      type="email" 
+                      name="email" 
+                      required 
+                      value={formData.email} 
+                      onChange={handleContactChange} 
+                      placeholder="you@example.com" 
+                      className="w-full px-5 py-3.5 rounded-2xl border border-zinc-200 focus:outline-none focus:border-[#de1d4d] focus:ring-1 focus:ring-[#de1d4d] transition-colors bg-zinc-50/50 focus:bg-white text-zinc-800" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-2">Message</label>
+                    <textarea 
+                      name="message" 
+                      required 
+                      rows="4" 
+                      value={formData.message} 
+                      onChange={handleContactChange} 
+                      placeholder="How can we help you?" 
+                      className="w-full px-5 py-3.5 rounded-2xl border border-zinc-200 focus:outline-none focus:border-[#de1d4d] focus:ring-1 focus:ring-[#de1d4d] transition-colors resize-none bg-zinc-50/50 focus:bg-white text-zinc-800" 
+                    ></textarea>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting} 
+                    className={`w-full py-4 text-white rounded-2xl font-semibold text-lg transition-colors shadow-lg flex items-center justify-center gap-2 ${isSubmitting ? 'bg-zinc-400 cursor-not-allowed shadow-none' : 'bg-[#ec71c5] hover:bg-[#fd45e7] shadow-rose-500/25'}`}
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'} <Send size={18} />
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════ 6. FOOTER ════ */}
       <motion.footer
         className="text-white py-14 rounded-t-5xl -mt-12 relative overflow-hidden z-20"
-        style={{ background: 'linear-gradient(135deg, #ec71c5 0%, #eb5fbf 50%, #fd45e7 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #ec71c5 0%, #eb5fbf 50%, #fd45fa 100%)' }}
         variants={fadeUp} initial="hidden" whileInView="visible" viewport={vp}
       >
-        {/* Decorative petal overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-10"
           style={{ background: 'radial-gradient(ellipse at 80% 50%, white 0%, transparent 60%)' }} />
-        {/* Kanji watermark */}
         <div className="absolute right-8 bottom-4 font-jp text-white/10 text-9xl font-bold select-none pointer-events-none leading-none">
           桜
         </div>
