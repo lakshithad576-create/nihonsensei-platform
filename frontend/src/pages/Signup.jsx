@@ -109,11 +109,31 @@ export default function Signup() {
               <label className="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-2">District</label>
               <select name="district" required value={formData.district} onChange={handleChange} className="w-full px-5 py-3.5 rounded-2xl border border-zinc-200 focus:outline-none focus:border-[#de1d4d] focus:ring-1 focus:ring-[#de1d4d] transition-colors bg-white">
                 <option value="" disabled>Select district</option>
+                <option value="ampara">Ampara</option>
+                <option value="anuradhapura">Anuradhapura</option>
+                <option value="badulla">Badulla</option>
+                <option value="batticaloa">Batticaloa</option>
                 <option value="colombo">Colombo</option>
-                <option value="kandy">Kandy</option>
                 <option value="galle">Galle</option>
                 <option value="gampaha">Gampaha</option>
+                <option value="hambantota">Hambantota</option>
+                <option value="jaffna">Jaffna</option>
+                <option value="kalutara">Kalutara</option>
+                <option value="kandy">Kandy</option>
+                <option value="kegalle">Kegalle</option>
+                <option value="kilinochchi">Kilinochchi</option>
                 <option value="kurunegala">Kurunegala</option>
+                <option value="mannar">Mannar</option>
+                <option value="matale">Matale</option>
+                <option value="matara">Matara</option>
+                <option value="moneragala">Moneragala</option>
+                <option value="mullaitivu">Mullaitivu</option>
+                <option value="nuwara-eliya">Nuwara Eliya</option>
+                <option value="polonnaruwa">Polonnaruwa</option>
+                <option value="puttalam">Puttalam</option>
+                <option value="ratnapura">Ratnapura</option>
+                <option value="trincomalee">Trincomalee</option>
+                <option value="vavuniya">Vavuniya</option> 
               </select>
             </div>
           </div>
