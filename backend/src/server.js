@@ -3,6 +3,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import recordingRoutes from "./routes/recording.routes.js";
+import studentRoutes from "./routes/student.routes.js";
+import vocabRoutes from "./routes/vocab.routes.js";
 
 dotenv.config();
 
@@ -25,6 +29,11 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/recordings", recordingRoutes);
+app.use("/api/students", studentRoutes);
+app.use("/api/vocab", vocabRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

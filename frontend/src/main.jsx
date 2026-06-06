@@ -7,7 +7,6 @@ import ProtectedLayout from './layouts/ProtectedLayout';
 
 import Home from './pages/Home';
 import Login from './pages/login';
-import LoginCallback from './routes/LoginCallback';
 import Dashboard from './pages/Dashboard';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
@@ -27,12 +26,6 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: Login,
-});
-
-const loginCallbackRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/login-callback',
-  component: LoginCallback,
 });
 
 function ProtectedDashboardRoute() {
@@ -63,7 +56,6 @@ const signupRoute = createRoute({
   component: Signup,
 });
 
-// <-- 2. Created the Admin Route
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin',

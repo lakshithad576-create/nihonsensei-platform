@@ -1,13 +1,9 @@
 import { PlayCircle } from 'lucide-react';
 
-export default function StudentOverviewTab({ onNavigateTab }) {
-  const vocabWords = [
-    { kanji: '桜', romaji: 'sakura', meaning: 'Cherry Blossom' },
-    { kanji: '先生', romaji: 'sensei', meaning: 'Teacher' },
-    { kanji: '勉強', romaji: 'benkyou', meaning: 'Study' },
-    { kanji: '毎日', romaji: 'mainichi', meaning: 'Every day' },
-    { kanji: 'おはよう', romaji: 'ohayou', meaning: 'Good morning' },
-  ];
+export default function StudentOverviewTab({
+  onNavigateTab,
+  dailyVocab = [],
+}) {
 
   return (
     <div className="flex w-full flex-1 flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 xl:flex-row">
@@ -95,27 +91,25 @@ export default function StudentOverviewTab({ onNavigateTab }) {
         </p>
 
         <div className="flex flex-1 flex-col gap-2.5">
-          {vocabWords.map((word, index) => (
-            <div
-              key={index}
-              className="flex cursor-default items-center justify-between rounded-2xl border border-white/80 bg-white/50 p-3 shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all hover:bg-white hover:shadow-[0_4px_15px_rgb(222,29,77,0.05)]"
-            >
-              <div>
-                <p className="mb-1 text-base font-bold leading-none text-zinc-800 transition-colors hover:text-[#de1d4d]">
-                  {word.kanji}
-                </p>
-                <p className="text-[9px] font-medium uppercase tracking-widest text-zinc-400">
-                  {word.romaji}
-                </p>
-              </div>
+         {dailyVocab.length > 0 ? (
+  dailyVocab.map((word, idx) => (
+    <div
+      key={word.id || idx}
+      className="flex items-center justify-between rounded-2xl bg-white/70 p-3"
+    >
+      <div>
+        <p className="text-lg font-bold text-zinc-900">{word.kanji}</p>
+        <p className="text-xs text-zinc-500">{word.romaji}</p>
+      </div>
 
-              <div className="text-right">
-                <p className="text-xs font-semibold text-zinc-600 transition-colors hover:text-zinc-900">
-                  {word.meaning}
-                </p>
-              </div>
-            </div>
-          ))}
+      <p className="text-sm font-medium text-zinc-700">{word.meaning}</p>
+    </div>
+  ))
+) : (
+  <p className="rounded-2xl bg-white/70 p-3 text-sm text-zinc-500">
+    No vocabulary words published yet.
+  </p>
+)}
         </div>
       </div>
     </div>
