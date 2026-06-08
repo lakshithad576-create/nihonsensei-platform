@@ -137,7 +137,15 @@ export default function Home() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ─── UPDATED: Actual Backend Connection ─────────────────────────────────
+  // ─── Scroll Helper Function ──────────────────────────────────────────────
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // ─── Actual Backend Connection ─────────────────────────────────────────
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -178,11 +186,11 @@ export default function Home() {
     >
       
       {/* ════ NAVBAR ════ */}
-      <div className="absolute top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
         <nav className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/40 rounded-full px-6 py-3 flex items-center justify-between pointer-events-auto transition-all">
           
-          <Link 
-            to="/" 
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="flex items-center gap-2 text-xl md:text-2xl font-bold text-zinc-900 tracking-tight hover:opacity-80 transition-opacity"
             style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}
           >
@@ -190,12 +198,12 @@ export default function Home() {
               <Flower2 size={18} strokeWidth={2.5} color="#ff059f" />
             </div>
             <span>NihonSensei<span style={{ color: '#ff059f' }}>.lk</span></span>
-          </Link>
+          </button>
 
           <div className="hidden md:flex items-center gap-8 font-sans text-sm font-medium text-zinc-600">
-            <Link to="/" className="hover:text-[#ff059f] transition-colors">Home</Link>
-            <Link to="/about" className="hover:text-[#ff059f] transition-colors">About</Link>
-            <Link to="/contact" className="hover:text-[#ff059f] transition-colors">Contact</Link>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-[#ff059f] transition-colors">Home</button>
+            <button onClick={() => scrollToSection('about')} className="hover:text-[#ff059f] transition-colors">About</button>
+            <button onClick={() => scrollToSection('contact')} className="hover:text-[#ff059f] transition-colors">Contact</button>
           </div>
 
           <Link 
@@ -278,6 +286,7 @@ export default function Home() {
               </Link>
               
               <Btn
+                onClick={() => scrollToSection('about')}
                 className="px-8 py-3.5 text-white rounded-full font-medium flex items-center gap-2.5 shadow-xl hover:scale-105 transition-all"
                 style={{ background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)' }}
               >
@@ -289,8 +298,8 @@ export default function Home() {
         </div>
       </section>
         
-      {/* ════ 2. MEET YOUR SENSEI ════ */}
-      <section className="py-24 relative overflow-hidden bg-zinc-50 antialiased">
+      {/* ════ 2. MEET YOUR SENSEI (ABOUT) ════ */}
+      <section id="about" className="py-24 relative overflow-hidden bg-zinc-50 antialiased">
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
           <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="visible" viewport={vp}>
             <h2 className="text-4xl md:text-5xl font-normal text-zinc-900 mb-4 tracking-tight">
