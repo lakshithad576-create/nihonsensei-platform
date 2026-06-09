@@ -9,7 +9,8 @@ import categoryRoutes from "./routes/category.routes.js";
 import recordingRoutes from "./routes/recording.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import vocabRoutes from "./routes/vocab.routes.js";
-import contactRoutes from "./routes/contact.routes.js"; // 👈 New import added
+import contactRoutes from "./routes/contact.routes.js";
+import liveClassRoutes from "./routes/liveClass.routes.js";
 
 dotenv.config();
 
@@ -37,7 +38,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/recordings", recordingRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/vocab", vocabRoutes);
-app.use("/api/contact", contactRoutes); // 👈 New route mounted
+app.use("/api/contact", contactRoutes);
+app.use("/api/live-classes", liveClassRoutes);
 
 // ─── ERROR HANDLING ──────────────────────────────────────
 app.use((err, req, res, next) => {

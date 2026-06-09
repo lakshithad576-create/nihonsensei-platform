@@ -13,6 +13,7 @@ import AdminVocabTab from "../components/admin/AdminVocabTab";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const LIVE_CLASS_CATEGORY = "Live Zoom Classes";
 
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -132,10 +133,15 @@ export default function AdminDashboard() {
         apiRequest("/students"),
       ]);
 
-      const categoryNames = (categoryRes.data || []).map(
+      const defaultCategories = ["Live Zoom Classes"];
+      
+      const backendCategories = (categoryRes.data || []).map(
         (category) => category.name,
       );
 
+      const categoryNames = Array.from(
+        new Set([...defaultCategories, ...backendCategories]),
+      );
       const studentList = (studentRes.data || [])
         .filter((user) => user.role !== "admin")
         .map(formatStudent);
@@ -370,48 +376,92 @@ export default function AdminDashboard() {
   };
 
   // ─── STATE: Live Zoom Classes ─────────────────────────────────────────────
-  const [liveClasses, setLiveClasses] = useState([
-    {
-      id: 1,
-      title: "JLPT N5 Vocabulary - Session 04",
-      link: "https://zoom.us/j/123456789",
-      category: "Live Zoom Classes",
-      datetime: "2026-06-05T10:00",
-    },
-  ]);
+  // ─── STATE: Live Zoom Classes ─────────────────────────────────────────────
+  const [liveClasses, setLiveClasses] = useState([]);
 
   const [classData, setClassData] = useState({
     title: "",
     link: "",
-    category: "",
+    category: LIVE_CLASS_CATEGORY,
     datetime: "",
   });
 
-  const handleClassSubmit = (e) => {
-    e.preventDefault();
+  const [isSavingClass, setIsSavingClass] = useState(false);
 
-    const newClass = {
-      id: Date.now(),
-      title: classData.title,
-      link: classData.link,
-      category: classData.category || categories[0],
-      datetime: classData.datetime,
-    };
+  const loadLiveClasses = async () => {
+    try {
+      const res = await apiRequest("/live-classes");
 
-    setLiveClasses((prev) => [...prev, newClass]);
-
-    alert(`Class "${classData.title}" scheduled successfully!`);
-
-    setClassData({
-      title: "",
-      link: "",
-      category: "",
-      datetime: "",
-    });
+      if (Array.isArray(res.data)) {
+        setLiveClasses(res.data);
+      }
+    } catch (error) {
+      console.error("Failed to load live classes:", error);
+    }
   };
 
-  const handleDeleteClass = (id) => {
-    setLiveClasses((prev) => prev.filter((liveClass) => liveClass.id !== id));
+  useEffect(() => {
+    loadLiveClasses();
+  }, []);
+
+  const handleClassSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!classData.title.trim()) {
+      alert("Please enter a class title.");
+      return;
+    }
+
+    if (!classData.link.trim()) {
+      alert("Please enter the Zoom link.");
+      return;
+    }
+
+    if (!classData.datetime) {
+      alert("Please select date and time.");
+      return;
+    }
+
+    try {
+      setIsSavingClass(true);
+
+      const res = await apiRequest("/live-classes", {
+        method: "POST",
+        body: JSON.stringify({
+          title: classData.title.trim(),
+          link: classData.link.trim(),
+          category: LIVE_CLASS_CATEGORY,
+          datetime: classData.datetime,
+        }),
+      });
+
+      setLiveClasses((prev) => [res.data, ...prev]);
+
+      alert(`Class "${classData.title}" scheduled successfully!`);
+
+      setClassData({
+        title: "",
+        link: "",
+        category: LIVE_CLASS_CATEGORY,
+        datetime: "",
+      });
+    } catch (error) {
+      alert(error.message || "Failed to schedule class.");
+    } finally {
+      setIsSavingClass(false);
+    }
+  };
+
+  const handleDeleteClass = async (id) => {
+    try {
+      await apiRequest(`/live-classes/${id}`, {
+        method: "DELETE",
+      });
+
+      setLiveClasses((prev) => prev.filter((liveClass) => liveClass.id !== id));
+    } catch (error) {
+      alert(error.message || "Failed to delete class.");
+    }
   };
 
   const renderContent = () => {
@@ -425,6 +475,7 @@ export default function AdminDashboard() {
             onClassSubmit={handleClassSubmit}
             onClassDataChange={setClassData}
             onDeleteClass={handleDeleteClass}
+            isSavingClass={isSavingClass}
           />
         );
 
