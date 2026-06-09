@@ -103,112 +103,120 @@ export default function AdminDashboard() {
   };
 
   // ─── STATE: Dynamic Categories & Student Permissions ──────────────────────
-  const [categories, setCategories] = useState([
-    "Live Zoom Classes",
-    "Grammar Particles",
-    "Spoken Practice",
-  ]);
+  const [categories, setCategories] = useState([]);
 
   const [newCategoryName, setNewCategoryName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      name: "Lakshitha",
-      email: "lakshithad576@gmail.com",
-      plan: "N5 Premium",
-      permissions: {
-        "Live Zoom Classes": true,
-        "Grammar Particles": true,
-        "Spoken Practice": true,
-      },
-    },
-    {
-      id: 2,
-      name: "Kavindi Samarakoon",
-      email: "kavindi@example.com",
-      plan: "N5 Basic",
-      permissions: {
-        "Live Zoom Classes": false,
-        "Grammar Particles": false,
-        "Spoken Practice": false,
-      },
-    },
-    {
-      id: 3,
-      name: "Navodaka Janitha",
-      email: "navodaka@example.com",
-      plan: "N4 Premium",
-      permissions: {
-        "Live Zoom Classes": true,
-        "Grammar Particles": true,
-        "Spoken Practice": false,
-      },
-    },
-  ]);
+  const [students, setStudents] = useState([]);
 
-  const handleAddCategory = () => {
-    const category = newCategoryName.trim();
+  const [permissionsLoading, setPermissionsLoading] = useState(false);
 
-    if (category && !categories.includes(category)) {
-      setCategories((prev) => [...prev, category]);
+  const formatStudent = (student) => ({
+    id: student.uid || student.id,
+    name:
+      `${student.firstName || ""} ${student.lastName || ""}`.trim() ||
+      student.name ||
+      "Unnamed Student",
+    email: student.email || "",
+    plan: student.plan || "N/A",
+    permissions: student.permissions || {},
+  });
 
-      setStudents((prevStudents) =>
-        prevStudents.map((student) => ({
-          ...student,
-          permissions: {
-            ...student.permissions,
-            [category]: false,
-          },
-        })),
+  const loadAccessRights = async () => {
+    try {
+      setPermissionsLoading(true);
+
+      const [categoryRes, studentRes] = await Promise.all([
+        apiRequest("/categories"),
+        apiRequest("/students"),
+      ]);
+
+      const categoryNames = (categoryRes.data || []).map(
+        (category) => category.name,
       );
 
-      setNewCategoryName("");
+      const studentList = (studentRes.data || [])
+        .filter((user) => user.role !== "admin")
+        .map(formatStudent);
+
+      setCategories(categoryNames);
+      setStudents(studentList);
+    } catch (error) {
+      console.error("Failed to load access rights:", error);
+      alert(error.message || "Failed to load access rights.");
+    } finally {
+      setPermissionsLoading(false);
     }
   };
 
-  const handleCategoryPermissionToggle = (studentId, categoryName) => {
-    setStudents((prevStudents) =>
-      prevStudents.map((student) => {
-        if (student.id === studentId) {
-          return {
-            ...student,
-            permissions: {
-              ...student.permissions,
-              [categoryName]: !student.permissions[categoryName],
-            },
-          };
-        }
+  useEffect(() => {
+    loadAccessRights();
+  }, []);
 
-        return student;
-      }),
-    );
-  };
+  const handleAddCategory = async () => {
+    const category = newCategoryName.trim();
 
-  const handleRemoveCategory = (categoryToRemove) => {
-    if (categoryToRemove === "Live Zoom Classes") {
-      alert("The 'Live Zoom Classes' core category cannot be deleted.");
+    if (!category) {
+      alert("Please enter a category name.");
       return;
     }
 
-    setCategories((prev) =>
-      prev.filter((category) => category !== categoryToRemove),
-    );
+    if (categories.includes(category)) {
+      alert("This category already exists.");
+      return;
+    }
 
-    setStudents((prevStudents) =>
-      prevStudents.map((student) => {
-        const updatedPermissions = { ...student.permissions };
-        delete updatedPermissions[categoryToRemove];
+    try {
+      await apiRequest("/categories", {
+        method: "POST",
+        body: JSON.stringify({ name: category }),
+      });
 
-        return {
-          ...student,
-          permissions: updatedPermissions,
-        };
-      }),
-    );
+      setNewCategoryName("");
+      await loadAccessRights();
+    } catch (error) {
+      alert(error.message || "Failed to add category.");
+    }
   };
 
+  const handleCategoryPermissionToggle = async (studentId, categoryName) => {
+    const selectedStudent = students.find(
+      (student) => student.id === studentId,
+    );
+
+    if (!selectedStudent) return;
+
+    const updatedPermissions = {
+      ...selectedStudent.permissions,
+      [categoryName]: !selectedStudent.permissions?.[categoryName],
+    };
+
+    // instant UI update
+    setStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.id === studentId
+          ? { ...student, permissions: updatedPermissions }
+          : student,
+      ),
+    );
+
+    try {
+      await apiRequest(`/students/${studentId}/permissions`, {
+        method: "PATCH",
+        body: JSON.stringify({ permissions: updatedPermissions }),
+      });
+    } catch (error) {
+      alert(error.message || "Failed to update permission.");
+      await loadAccessRights(); // rollback from backend
+    }
+  };
+
+  const handleRemoveCategory = (categoryToRemove) => {
+    alert(
+      "Category delete backend endpoint is not created yet. For now, remove it manually from Firestore or add DELETE /api/categories/:id.",
+    );
+  };
   // ─── STATE: Recording Uploads & Deletion ──────────────────────────────────
   const [recordings, setRecordings] = useState([
     {
@@ -229,32 +237,91 @@ export default function AdminDashboard() {
     title: "",
     category: "",
     date: "",
+    videoFile: null,
   });
 
-  const handleUploadSubmit = (e) => {
+  const [isUploadingRecording, setIsUploadingRecording] = useState(false);
+
+  const handleUploadSubmit = async (e) => {
     e.preventDefault();
 
-    const newRecording = {
-      id: Date.now(),
-      title: uploadData.title,
-      category: uploadData.category || categories[0],
-      date: uploadData.date,
-    };
+    if (!uploadData.title.trim()) {
+      alert("Please enter a recording title.");
+      return;
+    }
 
-    setRecordings((prev) => [...prev, newRecording]);
+    if (!uploadData.category && !categories[0]) {
+      alert("Please select a category.");
+      return;
+    }
 
-    console.log("Uploading Video:", newRecording);
-    alert(`Recording "${uploadData.title}" uploaded successfully!`);
+    if (!uploadData.date) {
+      alert("Please select a recording date.");
+      return;
+    }
 
-    setUploadData({
-      title: "",
-      category: "",
-      date: "",
-    });
+    if (!uploadData.videoFile) {
+      alert("Please select a video file.");
+      return;
+    }
+
+    try {
+      setIsUploadingRecording(true);
+
+      const formData = new FormData();
+      formData.append("title", uploadData.title.trim());
+      formData.append("category", uploadData.category || categories[0]);
+      formData.append("date", uploadData.date);
+      formData.append("videoFile", uploadData.videoFile);
+
+      const saveRes = await apiRequest("/recordings/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      setRecordings((prev) => [saveRes.data, ...prev]);
+
+      alert(`Recording "${uploadData.title}" uploaded successfully!`);
+
+      setUploadData({
+        title: "",
+        category: "",
+        date: "",
+        videoFile: null,
+      });
+    } catch (error) {
+      alert(error.message || "Failed to upload recording.");
+    } finally {
+      setIsUploadingRecording(false);
+    }
   };
 
-  const handleDeleteRecording = (id) => {
-    setRecordings((prev) => prev.filter((recording) => recording.id !== id));
+  const loadRecordings = async () => {
+    try {
+      const res = await apiRequest("/recordings");
+
+      if (Array.isArray(res.data)) {
+        setRecordings(res.data);
+      }
+    } catch (error) {
+      console.error("Failed to load recordings:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadRecordings();
+  }, []);
+
+  const handleDeleteRecording = async (id) => {
+    try {
+      await apiRequest(`/recordings/${id}`, {
+        method: "DELETE",
+      });
+
+      setRecordings((prev) => prev.filter((recording) => recording.id !== id));
+    } catch (error) {
+      alert(error.message || "Failed to delete recording.");
+    }
   };
 
   // ─── STATE: Study Materials ───────────────────────────────────────────────
@@ -370,6 +437,7 @@ export default function AdminDashboard() {
             onUploadDataChange={setUploadData}
             onUploadSubmit={handleUploadSubmit}
             onDeleteRecording={handleDeleteRecording}
+            isUploading={isUploadingRecording}
           />
         );
 
