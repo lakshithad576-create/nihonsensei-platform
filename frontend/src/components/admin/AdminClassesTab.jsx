@@ -1,4 +1,4 @@
-import { CalendarDays, Link2, Trash2 } from 'lucide-react';
+import { CalendarDays, Link2, Trash2 } from "lucide-react";
 
 export default function AdminClassesTab({
   categories,
@@ -7,6 +7,7 @@ export default function AdminClassesTab({
   onClassSubmit,
   onClassDataChange,
   onDeleteClass,
+  isSavingClass,
 }) {
   return (
     <div className="flex w-full flex-1 flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -83,27 +84,16 @@ export default function AdminClassesTab({
               Access Category
             </label>
 
-            <select
-              required
-              value={classData.category}
-              onChange={(e) =>
-                onClassDataChange({
-                  ...classData,
-                  category: e.target.value,
-                })
-              }
-              className="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-5 py-3 text-sm focus:border-[#de1d4d] focus:outline-none focus:ring-1 focus:ring-[#de1d4d]"
-            >
-              <option value="" disabled>
-                Select category...
-              </option>
+            <input
+              type="text"
+              value="Live Zoom Classes"
+              disabled
+              className="w-full cursor-not-allowed rounded-xl border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm text-zinc-500"
+            />
 
-              {categories.map((category, index) => (
-                <option key={index} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+            <p className="mt-2 text-[11px] text-zinc-400">
+              Students must have Live Zoom Classes access to join.
+            </p>
           </div>
 
           <div>
@@ -129,9 +119,10 @@ export default function AdminClassesTab({
         <div className="mt-6 flex justify-end">
           <button
             type="submit"
-            className="rounded-xl bg-[#de1d4d] px-8 py-3 text-sm font-bold text-white shadow-md shadow-rose-500/20 transition-colors hover:bg-[#be1640]"
+            disabled={isSavingClass}
+            className="rounded-xl bg-[#de1d4d] px-8 py-3 text-sm font-bold text-white shadow-md shadow-rose-500/20 transition-colors hover:bg-[#be1640] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Add to Schedule
+            {isSavingClass ? "Saving..." : "Add to Schedule"}
           </button>
         </div>
       </form>
@@ -159,7 +150,9 @@ export default function AdminClassesTab({
                 <h4 className="font-bold text-zinc-900">{liveClass.title}</h4>
 
                 <p className="mt-1 text-xs text-zinc-500">
-                  {new Date(liveClass.datetime).toLocaleString()}
+                  {liveClass.datetime
+                    ? new Date(liveClass.datetime).toLocaleString()
+                    : "No date selected"}
                 </p>
 
                 <a

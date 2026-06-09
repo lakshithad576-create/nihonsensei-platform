@@ -25,6 +25,19 @@ const createToken = (user) => {
   );
 };
 
+const buildSafeUser = (userData) => ({
+  uid: userData.uid,
+  firstName: userData.firstName,
+  lastName: userData.lastName,
+  email: userData.email,
+  phone: userData.phone,
+  district: userData.district,
+  address: userData.address,
+  role: userData.role,
+  status: userData.status,
+  permissions: userData.permissions || {},
+});
+
 // 1️⃣ NEW ROUTE: Request OTP (Does NOT create a user yet)
 router.post("/send-otp", async (req, res, next) => {
   try {
@@ -127,17 +140,7 @@ router.post("/signup", async (req, res, next) => {
     // Generate Token
     const token = createToken(userData);
 
-    const safeUser = {
-      uid: userData.uid,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email,
-      phone: userData.phone,
-      district: userData.district,
-      address: userData.address,
-      role: userData.role,
-      status: userData.status
-    };
+    const safeUser = buildSafeUser(userData);
 
     return res.status(201).json({
       success: true,
@@ -181,17 +184,7 @@ router.post("/login", async (req, res, next) => {
 
     const token = createToken(userData);
 
-    const safeUser = {
-      uid: userData.uid,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email,
-      phone: userData.phone,
-      district: userData.district,
-      address: userData.address,
-      role: userData.role,
-      status: userData.status
-    };
+    const safeUser = buildSafeUser(userData);
 
     return res.json({ success: true, message: "Login successful", token, user: safeUser });
   } catch (error) {
@@ -208,17 +201,7 @@ router.get("/me", protect, async (req, res, next) => {
 
     const userData = userDoc.data();
 
-    const safeUser = {
-      uid: userData.uid,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email,
-      phone: userData.phone,
-      district: userData.district,
-      address: userData.address,
-      role: userData.role,
-      status: userData.status
-    };
+    const safeUser = buildSafeUser(userData);
 
     res.json({ success: true, user: safeUser });
   } catch (error) {

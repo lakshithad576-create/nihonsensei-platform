@@ -1,4 +1,5 @@
-import { ImagePlus, Trash2, UploadCloud, Video } from 'lucide-react';
+import { useRef } from "react";
+import { ImagePlus, Trash2, UploadCloud, Video } from "lucide-react";
 
 export default function AdminUploadTab({
   categories,
@@ -7,7 +8,19 @@ export default function AdminUploadTab({
   onUploadDataChange,
   onUploadSubmit,
   onDeleteRecording,
+  isUploading,
 }) {
+  const videoInputRef = useRef(null);
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files?.[0] || null;
+
+    onUploadDataChange((prev) => ({
+      ...prev,
+      videoFile: file,
+    }));
+  };
+
   return (
     <div className="flex w-full flex-1 flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2
@@ -30,7 +43,18 @@ export default function AdminUploadTab({
             Upload Video
           </label>
 
-          <div className="group flex h-56 w-full cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-zinc-200 bg-zinc-50 transition-all hover:border-[#de1d4d]/30 hover:bg-[#fff0f3]/50">
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime"
+            onChange={handleVideoChange}
+            className="hidden"
+          />
+
+          <div
+            onClick={() => videoInputRef.current?.click()}
+            className="group flex h-56 w-full cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-zinc-200 bg-zinc-50 transition-all hover:border-[#de1d4d]/30 hover:bg-[#fff0f3]/50"
+          >
             <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-sm transition-all group-hover:scale-110 group-hover:text-[#de1d4d]">
               <UploadCloud
                 size={24}
@@ -40,11 +64,21 @@ export default function AdminUploadTab({
             </div>
 
             <p className="mb-1 text-sm font-bold text-zinc-700">
-              Click to browse or drag video
+              {uploadData.videoFile
+                ? uploadData.videoFile.name
+                : "Click to browse video"}
             </p>
 
-            <p className="text-[11px] text-zinc-400">MP4, WebM or MOV Max. 2GB</p>
+            <p className="text-[11px] text-zinc-400">
+              MP4, WebM or MOV Max. 2GB
+            </p>
           </div>
+
+          {uploadData.videoFile && (
+            <p className="mt-2 text-xs text-zinc-500">
+              Selected: {uploadData.videoFile.name}
+            </p>
+          )}
 
           <div className="mt-6 flex cursor-pointer items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50 p-4 transition-colors hover:border-zinc-300">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
@@ -56,7 +90,9 @@ export default function AdminUploadTab({
                 Add custom thumbnail
               </p>
 
-              <p className="text-xs text-zinc-400">Optional 16:9 ratio recommended</p>
+              <p className="text-xs text-zinc-400">
+                Optional 16:9 ratio recommended
+              </p>
             </div>
           </div>
         </div>
@@ -70,15 +106,15 @@ export default function AdminUploadTab({
             <input
               type="text"
               required
-              placeholder="e.g. Grammar Particles Part 4"
               value={uploadData.title}
               onChange={(e) =>
-                onUploadDataChange({
-                  ...uploadData,
+                onUploadDataChange((prev) => ({
+                  ...prev,
                   title: e.target.value,
-                })
+                }))
               }
-              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm focus:border-[#de1d4d] focus:outline-none focus:ring-1 focus:ring-[#de1d4d]"
+              placeholder="Example: Grammar Particles Part 1"
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm focus:border-[#de1d4d] focus:outline-none focus:ring-1 focus:ring-[#de1d4d]"
             />
           </div>
 
@@ -91,10 +127,10 @@ export default function AdminUploadTab({
               required
               value={uploadData.category}
               onChange={(e) =>
-                onUploadDataChange({
-                  ...uploadData,
+                onUploadDataChange((prev) => ({
+                  ...prev,
                   category: e.target.value,
-                })
+                }))
               }
               className="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm focus:border-[#de1d4d] focus:outline-none focus:ring-1 focus:ring-[#de1d4d]"
             >
@@ -124,10 +160,10 @@ export default function AdminUploadTab({
               required
               value={uploadData.date}
               onChange={(e) =>
-                onUploadDataChange({
-                  ...uploadData,
+                onUploadDataChange((prev) => ({
+                  ...prev,
                   date: e.target.value,
-                })
+                }))
               }
               className="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm focus:border-[#de1d4d] focus:outline-none focus:ring-1 focus:ring-[#de1d4d]"
             />
@@ -136,16 +172,18 @@ export default function AdminUploadTab({
           <div className="mt-auto pt-2">
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-zinc-800"
+              disabled={isUploading}
+              className="rounded-xl bg-[#de1d4d] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Video size={16} />
-              Publish Recording
+              {isUploading ? "Uploading..." : "Publish Recording"}
             </button>
           </div>
         </div>
       </form>
 
-      <h3 className="mb-4 font-bold text-zinc-900">Manage Uploaded Recordings</h3>
+      <h3 className="mb-4 font-bold text-zinc-900">
+        Manage Uploaded Recordings
+      </h3>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {recordings.length === 0 ? (

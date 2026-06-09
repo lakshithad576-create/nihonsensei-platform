@@ -11,11 +11,12 @@ import StudentSettingsTab from "../components/student/StudentSettingsTab";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const { logout } = useAuth();
+
+  // add userProfile here
+  const { logout, userProfile } = useAuth();
+
   const navigate = useNavigate();
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const [dailyVocab, setDailyVocab] = useState([]);
 
   useEffect(() => {
@@ -44,16 +45,20 @@ export default function Dashboard() {
     setIsMobileMenuOpen(false);
   };
 
+  const canAccess = (categoryName) => {
+    return userProfile?.permissions?.[categoryName] === true;
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "live":
-        return <StudentLiveClassesTab />;
+        return <StudentLiveClassesTab canAccess={canAccess} />;
 
       case "recordings":
-        return <StudentRecordingsTab />;
+        return <StudentRecordingsTab canAccess={canAccess} />;
 
       case "materials":
-        return <StudentMaterialsTab />;
+        return <StudentMaterialsTab canAccess={canAccess} />;
 
       case "settings":
         return <StudentSettingsTab />;
