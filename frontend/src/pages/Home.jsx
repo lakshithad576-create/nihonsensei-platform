@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlayCircle, BookOpen, Video, Plus, Star, User, ArrowRight, Flower2, Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { apiRequest } from '../config/api';
 
 // ─── FAQ Data ───────────────────────────────────────────────────────────────
 const faqData = [
@@ -152,17 +153,10 @@ export default function Home() {
     
     try {
       // Send the data to your Node.js backend route
-      const response = await fetch('http://localhost:5000/api/contact', {
+      await apiRequest('/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to send message');
-      }
 
       // Success! Show the checkmark screen
       setIsSent(true);

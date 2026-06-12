@@ -3,6 +3,20 @@ import nodemailer from 'nodemailer';
 
 const router = express.Router();
 
+const mailUser = process.env.EMAIL_USER;
+const mailPass = process.env.EMAIL_PASS;
+const canSendEmail = Boolean(mailUser && mailPass);
+
+const transporter = canSendEmail
+  ? nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: mailUser,
+        pass: mailPass,
+      },
+    })
+  : null;
+
 router.post('/', async (req, res) => {
   try {
     const { name, email, message } = req.body;
@@ -11,18 +25,9 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    // Set up the email transporter using your existing Gmail credentials
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
    // Configure the email details
     const mailOptions = {
-      from: process.env.EMAIL_USER,         // ⬅️ Keep this as process.env.EMAIL_USER (The sender)
+      from: mailUser,
       to: 'ydilrukshi393@gmail.com',        // ⬅️ CHANGE THIS LINE (The receiver)
       replyTo: email,                       // If you click "Reply", it goes to the student
       subject: `NihonSensei Contact Form: ${name}`,
@@ -38,9 +43,13 @@ router.post('/', async (req, res) => {
       `
     };
 
-    await transporter.sendMail(mailOptions);
-    
-    res.json({ success: true, message: 'Message sent successfully' });
+    if (transporter) {
+      await transporter.sendMail(mailOptions);
+      res.json({ success: true, message: 'Message sent successfully' });
+      return;
+    }
+
+    res.json({ success: true, message: 'Message received. Email delivery is not configured.' });
   } catch (error) {
     console.error("Contact form error:", error);
     res.status(500).json({ success: false, message: 'Failed to send message' });

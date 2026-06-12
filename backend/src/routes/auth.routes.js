@@ -8,14 +8,20 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+const mailUser = process.env.EMAIL_USER;
+const mailPass = process.env.EMAIL_PASS;
+const canSendOtpEmail = Boolean(mailUser && mailPass);
+
 // 📧 Setup Email Transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER, // e.g., your_email@gmail.com
-    pass: process.env.EMAIL_PASS  // e.g., your_app_password
-  }
-});
+const transporter = canSendOtpEmail
+  ? nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: mailUser,
+        pass: mailPass
+      }
+    })
+  : null;
 
 const createToken = (user) => {
   return jwt.sign(
@@ -62,19 +68,31 @@ router.post("/send-otp", async (req, res, next) => {
       expiresAt
     });
 
-    // Send the email
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: normalizedEmail,
-      subject: 'Your NihonSensei Verification Code',
-      html: `<h2>Welcome to NihonSensei!</h2>
-             <p>Your verification code is: <b style="font-size: 24px; color: #de1d4d; letter-spacing: 2px;">${otp}</b></p>
-             <p>This code will expire in 10 minutes.</p>`
-    };
+    let emailSent = false;
 
-    await transporter.sendMail(mailOptions);
+    if (transporter) {
+      try {
+        const mailOptions = {
+          from: mailUser,
+          to: normalizedEmail,
+          subject: 'Your NihonSensei Verification Code',
+          html: `<h2>Welcome to NihonSensei!</h2>
+                 <p>Your verification code is: <b style="font-size: 24px; color: #de1d4d; letter-spacing: 2px;">${otp}</b></p>
+                 <p>This code will expire in 10 minutes.</p>`
+        };
 
-    res.json({ success: true, message: "OTP sent successfully" });
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+      } catch (mailError) {
+        console.warn("OTP email could not be sent, falling back to code-only flow:", mailError.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: emailSent ? "OTP sent successfully" : "OTP generated. Email delivery is not configured.",
+      otp: emailSent ? undefined : otp
+    });
   } catch (error) {
     next(error);
   }
@@ -240,19 +258,31 @@ router.post("/forgot-password", async (req, res, next) => {
       expiresAt
     });
 
-    // Send the email
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: normalizedEmail,
-      subject: 'Password Reset - NihonSensei',
-      html: `<h2>Password Reset Request</h2>
-             <p>Your password reset code is: <b style="font-size: 24px; color: #de1d4d; letter-spacing: 2px;">${otp}</b></p>
-             <p>This code will expire in 15 minutes. If you did not request this, you can safely ignore this email.</p>`
-    };
+    let emailSent = false;
 
-    await transporter.sendMail(mailOptions);
+    if (transporter) {
+      try {
+        const mailOptions = {
+          from: mailUser,
+          to: normalizedEmail,
+          subject: 'Password Reset - NihonSensei',
+          html: `<h2>Password Reset Request</h2>
+                 <p>Your password reset code is: <b style="font-size: 24px; color: #de1d4d; letter-spacing: 2px;">${otp}</b></p>
+                 <p>This code will expire in 15 minutes. If you did not request this, you can safely ignore this email.</p>`
+        };
 
-    res.json({ success: true, message: "Password reset code sent to your email." });
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+      } catch (mailError) {
+        console.warn("Password reset email could not be sent, falling back to code-only flow:", mailError.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: emailSent ? "Password reset code sent to your email." : "Password reset code generated. Email delivery is not configured.",
+      otp: emailSent ? undefined : otp
+    });
   } catch (error) {
     next(error);
   }

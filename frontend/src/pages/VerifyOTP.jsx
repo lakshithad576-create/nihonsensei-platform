@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Flower2, MailCheck, ArrowRight } from 'lucide-react';
+import { apiRequest } from '../config/api';
 
 export default function VerifyOTP() {
   const navigate = useNavigate();
@@ -10,12 +11,18 @@ export default function VerifyOTP() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pendingData, setPendingData] = useState(null);
+  const [fallbackOtp, setFallbackOtp] = useState('');
 
   // When the page loads, grab the data we saved from the Signup page
   useEffect(() => {
     const savedData = sessionStorage.getItem('pendingSignupData');
+    const savedOtp = sessionStorage.getItem('pendingSignupOtp');
+
     if (savedData) {
       setPendingData(JSON.parse(savedData));
+      if (savedOtp) {
+        setFallbackOtp(savedOtp);
+      }
     } else {
       // If someone tries to visit this page directly without signing up first, kick them back
       navigate({ to: '/signup' });
@@ -31,22 +38,19 @@ export default function VerifyOTP() {
       // Combine the saved form data with the OTP they just typed in
       const finalPayload = { ...pendingData, otp };
 
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const data = await apiRequest('/auth/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalPayload),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.message || 'Verification failed');
-
       // Success! Clean up storage, save the auth token, and go to the dashboard
       sessionStorage.removeItem('pendingSignupData');
+      sessionStorage.removeItem('pendingSignupOtp');
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      
-      navigate({ to: '/dashboard' });
+      sessionStorage.setItem('signupSuccessMessage', 'Account created successfully. Please log in.');
+
+      navigate({ to: '/login' });
 
     } catch (err) {
       setError(err.message || 'Invalid code. Please try again.');
@@ -82,6 +86,12 @@ export default function VerifyOTP() {
           We've sent a 6-digit verification code to <br/>
           <b className="text-zinc-900">{pendingData.email}</b>
         </p>
+
+        {fallbackOtp && (
+          <div className="mb-6 w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-900">
+            Development fallback code: <b className="tracking-[0.3em]">{fallbackOtp}</b>
+          </div>
+        )}
 
         {error && (
           <div className="mb-6 p-3 w-full bg-red-50 border border-red-100 rounded-xl flex justify-center text-red-600 text-sm font-semibold">

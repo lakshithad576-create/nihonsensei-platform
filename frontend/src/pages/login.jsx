@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "@tanstack/react-router"; // <-- Added useNavigate
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Mail, Lock, Flower2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -82,9 +82,19 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const message = sessionStorage.getItem("signupSuccessMessage");
+
+    if (message) {
+      setSuccessMessage(message);
+      sessionStorage.removeItem("signupSuccessMessage");
+    }
+  }, []);
 
   useEffect(() => {
     if (authLoading || !currentUser) {
@@ -238,6 +248,12 @@ export default function Login() {
           transition={{ duration: 0.4, ease: "easeOut" }}
           className="w-full max-w-[420px] bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.04)] border border-zinc-100"
         >
+          {successMessage && (
+            <div className="mb-6 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center">
+              <p className="text-sm text-emerald-700 font-semibold">{successMessage}</p>
+            </div>
+          )}
+
           {/* Card Header */}
           <h2 className="text-3xl font-normal text-zinc-900 mb-2 tracking-tight">
             Email login
@@ -246,7 +262,6 @@ export default function Login() {
             Enter your email and password to access your account.
           </p>
 
-          {/* <-- Added onSubmit={handleLogin} here */}
           <form className="space-y-6" onSubmit={handleLogin}>
             {/* Email Field */}
             <div>
@@ -298,23 +313,28 @@ export default function Login() {
             </div>
 
             {/* Forgot Password Link */}
-<div className="flex justify-end pt-1">
-  <Link
-    to="/forgot-password"
-    className="text-[#ff059f] text-xs font-bold hover:underline"
-  >
-    Forgot password?
-  </Link>
-</div>
+            <div className="flex justify-end pt-1">
+              <Link
+                to="/forgot-password"
+                className="text-[#ff059f] text-xs font-bold hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Error Message Box */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-center">
+                <p className="text-sm text-red-500 font-semibold">{error}</p>
+              </div>
+            )}
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-4 mt-2 bg-[#ff059f] hover:bg-[#ff059f] text-white rounded-2xl font-semibold text-lg transition-colors shadow-lg shadow-rose-500/25"
+              disabled={loading}
+              className="w-full py-4 mt-2 bg-[#ff059f] hover:bg-[#e0008b] text-white rounded-2xl font-semibold text-lg transition-colors shadow-lg shadow-rose-500/25 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {error && (
-                <p className="text-sm text-red-500 font-medium">{error}</p>
-              )}
               {loading ? "Logging in..." : "Log In"}
             </button>
           </form>

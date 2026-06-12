@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Flower2, AlertCircle, KeyRound, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { apiRequest } from '../config/api';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -23,14 +24,10 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      await apiRequest('/auth/forgot-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to send reset email');
 
       setStep(2); // Move to the OTP & New Password screen
     } catch (err) {
@@ -51,9 +48,8 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+      await apiRequest('/auth/reset-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email, 
           otp, 
@@ -61,9 +57,6 @@ export default function ForgotPassword() {
           confirmNewPassword: confirmPassword 
         }),
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to reset password');
 
       // Success! Show a checkmark screen briefly, then send to login
       setSuccess("Password successfully changed!");

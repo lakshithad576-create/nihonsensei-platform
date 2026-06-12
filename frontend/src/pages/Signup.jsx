@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Flower2, AlertCircle } from 'lucide-react';
+import { apiRequest } from '../config/api';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -33,15 +34,16 @@ export default function Signup() {
 
     try {
       // 1. Request the OTP from the backend
-      const response = await fetch('http://localhost:5000/api/auth/send-otp', {
+      const data = await apiRequest('/auth/send-otp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.message || 'Failed to send verification code');
+      if (data.otp) {
+        sessionStorage.setItem('pendingSignupOtp', data.otp);
+      } else {
+        sessionStorage.removeItem('pendingSignupOtp');
+      }
 
       // 2. Temporarily save the form data to sessionStorage so the next page can use it
       sessionStorage.setItem('pendingSignupData', JSON.stringify(formData));
@@ -161,12 +163,12 @@ export default function Signup() {
             </label>
           </div>
 
-          <button type="submit" disabled={isLoading} className={`w-full py-4 mt-6 text-white rounded-2xl font-semibold text-lg transition-colors shadow-lg ${isLoading ? 'bg-zinc-400 cursor-not-allowed shadow-none' : 'bg-[#de1d4d] hover:bg-[#be1640] shadow-rose-500/25'}`}>
+          <button type="submit" disabled={isLoading} className={`w-full py-4 mt-6 text-white rounded-2xl font-semibold text-lg transition-colors shadow-lg ${isLoading ? 'bg-zinc-400 cursor-not-allowed shadow-none' : 'bg-[#ff059f] hover:bg-[#ff059f] shadow-rose-500/25'}`}>
             {isLoading ? 'Sending verification...' : 'Create account'}
           </button>
           
           <p className="text-center text-sm text-zinc-600 mt-6">
-            Already have an account? <Link to="/login" className="text-[#de1d4d] font-bold hover:underline">Log in</Link>
+            Already have an account? <Link to="/login" className="text-[#ff059f] font-bold hover:underline">Log in</Link>
           </p>
         </form>
       </motion.div>

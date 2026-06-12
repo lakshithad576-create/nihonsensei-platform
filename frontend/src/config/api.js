@@ -1,5 +1,21 @@
 // src/config/api.js
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
+async function parseResponse(res) {
+  const contentType = res.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return res.json();
+  }
+
+  const text = await res.text();
+
+  return {
+    message: text.trim().startsWith("<!DOCTYPE")
+      ? "The API returned HTML instead of JSON. Check the deployed backend URL and Firebase rewrite rules."
+      : text || "Request failed"
+  };
+}
 
 export async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");
@@ -15,7 +31,7 @@ export async function apiRequest(path, options = {}) {
     }
   });
 
-  const data = await res.json();
+  const data = await parseResponse(res);
 
   if (!res.ok) {
     throw new Error(data.message || "Request failed");
