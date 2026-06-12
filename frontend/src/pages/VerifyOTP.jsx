@@ -81,7 +81,7 @@ export default function VerifyOTP() {
         <div className="w-16 h-16 bg-[#fff0f3] rounded-full flex items-center justify-center mb-6">
           <MailCheck size={32} className="text-[#de1d4d]" />
         </div>
-        <h2 className="text-3xl font-bold text-zinc-900 mb-2" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>Check your email</h2>
+        <h2 className="text-3xl font-normal text-zinc-900 mb-2 tracking-tight">Check your email</h2>
         <p className="text-zinc-600 text-sm mb-8">
           We've sent a 6-digit verification code to <br/>
           <b className="text-zinc-900">{pendingData.email}</b>

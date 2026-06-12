@@ -10,7 +10,8 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const loadUser = async () => {
-    const token = localStorage.getItem("token");
+    // localStorage වෙනුවට sessionStorage භාවිතා කර ඇත
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
       setCurrentUser(null);
@@ -24,10 +25,10 @@ export function AuthProvider({ children }) {
 
       setCurrentUser(data.user);
       setUserProfile(data.user);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      sessionStorage.setItem("user", JSON.stringify(data.user));
     } catch (error) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
 
       setCurrentUser(null);
       setUserProfile(null);
@@ -46,8 +47,9 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password }),
     });
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    // localStorage වෙනුවට sessionStorage භාවිතා කර ඇත
+    sessionStorage.setItem("token", data.token);
+    sessionStorage.setItem("user", JSON.stringify(data.user));
 
     setCurrentUser(data.user);
     setUserProfile(data.user);
@@ -61,8 +63,9 @@ export function AuthProvider({ children }) {
       body: JSON.stringify(payload),
     });
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    // localStorage වෙනුවට sessionStorage භාවිතා කර ඇත
+    sessionStorage.setItem("token", data.token);
+    sessionStorage.setItem("user", JSON.stringify(data.user));
 
     setCurrentUser(data.user);
     setUserProfile(data.user);
@@ -79,8 +82,9 @@ export function AuthProvider({ children }) {
       console.log("Logout API failed, clearing frontend token anyway");
     }
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // localStorage වෙනුවට sessionStorage භාවිතා කර ඇත
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
 
     setCurrentUser(null);
     setUserProfile(null);
