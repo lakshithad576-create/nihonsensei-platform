@@ -180,33 +180,36 @@ export default function Home() {
     >
       
       {/* ════ NAVBAR ════ */}
-      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-        <nav className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/40 rounded-full px-6 py-3 flex items-center justify-between pointer-events-auto transition-all">
+      <div className="fixed top-4 md:top-6 left-0 right-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none">
+        <nav className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/40 rounded-full px-4 py-2.5 md:px-6 md:py-3 flex items-center justify-between gap-2 pointer-events-auto transition-all">
           
+          {/* Logo */}
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center gap-2 text-xl md:text-2xl font-bold text-zinc-900 tracking-tight hover:opacity-80 transition-opacity"
+            className="flex items-center gap-1.5 md:gap-2 text-[1.1rem] sm:text-xl md:text-2xl font-bold text-zinc-900 tracking-tight hover:opacity-80 transition-opacity whitespace-nowrap"
             style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}
           >
-            <div className="w-8 h-8 rounded-full bg-[#ffe4ea] flex items-center justify-center shadow-sm">
-              <Flower2 size={18} strokeWidth={2.5} color="#ff059f" />
+            <div className="w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-full bg-[#ffe4ea] flex items-center justify-center shadow-sm">
+              <Flower2 className="w-4 h-4 md:w-[18px] md:h-[18px]" strokeWidth={2.5} color="#ff059f" />
             </div>
             <span>NihonSensei<span style={{ color: '#ff059f' }}>.lk</span></span>
           </button>
 
+          {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8 font-sans text-sm font-medium text-zinc-600">
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-[#ff059f] transition-colors">Home</button>
             <button onClick={() => scrollToSection('about')} className="hover:text-[#ff059f] transition-colors">About</button>
             <button onClick={() => scrollToSection('contact')} className="hover:text-[#ff059f] transition-colors">Contact</button>
           </div>
 
+          {/* Login Button */}
           <Link 
             to="/login" 
-            className="flex items-center gap-2 px-6 py-2.5 font-sans bg-[#ff059f] text-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-[#ff059f]/40 hover:scale-105 transition-all"
+            className="flex items-center gap-1.5 md:gap-2 px-4 py-2 md:px-6 md:py-2.5 font-sans bg-[#ff059f] text-white rounded-full text-xs sm:text-sm font-medium hover:shadow-lg hover:shadow-[#ff059f]/40 hover:scale-105 transition-all shrink-0 whitespace-nowrap"
           >
-            Student Login 
-            <div className="bg-white rounded-full p-0.5 flex items-center justify-center">
-              <ArrowRight size={14} strokeWidth={3} color="#ff059f" />
+            <span className="hidden sm:inline">Student </span>Login 
+            <div className="bg-white rounded-full p-0.5 flex items-center justify-center shrink-0">
+              <ArrowRight className="w-3 h-3 md:w-3.5 md:h-3.5" strokeWidth={3} color="#ff059f" />
             </div>
           </Link>
           
