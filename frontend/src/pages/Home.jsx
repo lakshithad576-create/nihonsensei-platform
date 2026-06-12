@@ -232,7 +232,7 @@ export default function Home() {
       </div>
 
       {/* ════ 1. HERO ════ */}
-      <section className="relative pt-28 pb-20 md:pt-32 md:pb-24 lg:pt-52 lg:pb-36 overflow-hidden antialiased">
+      <section className="relative pt-28 pb-16 md:pt-32 md:pb-24 lg:pt-48 lg:pb-36 overflow-hidden antialiased">
         <div className="absolute inset-0 z-0">
           <motion.img
             src="https://res.cloudinary.com/dci2l752v/image/upload/q_auto/f_auto/v1780213240/japan_oadsan.png"
@@ -249,7 +249,7 @@ export default function Home() {
         <div className="container mx-auto px-5 sm:px-6 relative z-10 mt-6 md:mt-0">
           <div className="max-w-3xl text-center md:text-left"> 
             <motion.h1
-              className="text-4xl sm:text-5xl lg:text-7xl font-normal text-white leading-tight md:leading-tight mb-4 md:mb-6 tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-normal text-white leading-tight md:leading-tight mb-3 md:mb-5 tracking-tight"
               style={{ textShadow: '0 4px 24px rgba(245, 17, 184, 0.4), 0 2px 8px rgba(0, 0, 0, 0.6)' }}
               variants={fadeUp} initial="hidden" animate="visible" custom={0.1}
             >
@@ -260,7 +260,7 @@ export default function Home() {
             </motion.h1>
 
             <motion.p
-              className="text-base sm:text-lg lg:text-xl text-white/95 mb-8 md:mb-10 max-w-2xl mx-auto md:mx-0 leading-relaxed font-light drop-shadow-lg"
+              className="text-base sm:text-lg lg:text-xl text-white/95 mb-5 md:mb-8 max-w-2xl mx-auto md:mx-0 leading-relaxed font-light drop-shadow-lg"
               style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)' }}
               variants={fadeUp} initial="hidden" animate="visible" custom={0.25}
             >
@@ -269,27 +269,18 @@ export default function Home() {
             </motion.p>
 
             <motion.div
-              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 md:gap-4"
+              className="flex flex-col sm:flex-row items-center justify-center md:justify-start"
               variants={fadeUp} initial="hidden" animate="visible" custom={0.38}
             >
               <Link to="/signup" className="w-full sm:w-auto">
                 <Btn
-                  className="w-full sm:w-auto px-6 py-3.5 md:px-8 md:py-3.5 text-white rounded-full font-medium flex items-center justify-center gap-2.5 shadow-xl hover:scale-105 transition-all"
+                  className="w-full sm:w-[260px] md:w-auto px-8 py-4 md:px-10 md:py-4 text-white rounded-full font-semibold text-lg flex items-center justify-center gap-3 shadow-2xl shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-105 transition-all"
                   style={{ background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)' }}
                 >
-                  <PlayCircle size={20} />
-                  Get Started
+                  <PlayCircle size={22} strokeWidth={2.5} />
+                  Get Started Now
                 </Btn>
               </Link>
-              
-              <Btn
-                onClick={() => scrollToSection('about')}
-                className="w-full sm:w-auto px-6 py-3.5 md:px-8 md:py-3.5 text-white rounded-full font-medium flex items-center justify-center gap-2.5 shadow-xl hover:scale-105 transition-all"
-                style={{ background: 'linear-gradient(135deg, #fb71e4 0%, #f43fd0 60%, #e11db3 100%)' }}
-              >
-                <User size={20} />
-                About Me
-              </Btn>
             </motion.div>
           </div>
         </div>
