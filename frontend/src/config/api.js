@@ -18,7 +18,7 @@ async function parseResponse(res) {
 }
 
 export async function apiRequest(path, options = {}) {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
   const hasFormDataBody = typeof FormData !== "undefined" && options.body instanceof FormData;
   const hasBody = options.body !== undefined && options.body !== null;
 
