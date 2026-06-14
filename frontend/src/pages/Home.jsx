@@ -185,7 +185,7 @@ export default function Home() {
           
           {/* Logo */}
           <button 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => window.location.reload()}
             className="flex items-center gap-1.5 md:gap-2 text-[1.1rem] sm:text-xl md:text-2xl font-bold text-zinc-900 tracking-tight hover:opacity-80 transition-opacity whitespace-nowrap"
             style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}
           >
